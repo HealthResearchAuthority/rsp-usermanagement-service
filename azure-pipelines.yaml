@@ -1,0 +1,152 @@
+name: $(Build.DefinitionName)_$(Build.SourceBranchName)_$(date:yyyyMMdd)$(rev:.r)
+
+pool:
+  vmImage: "Ubuntu-latest"
+
+trigger:
+  - main
+
+parameters:
+  - name: env
+    displayName: Environment
+    type: string
+    default: dev
+    values:
+      - dev
+      - systemtest_manual
+      - systemtest_auto
+      - system_integration_test
+      - uat
+      - pre_prod
+      - production
+  - name: devops_library_branch
+    displayName: DevOps Library Branch
+    type: string
+    default: main
+  - name: run_github_security_scan
+    displayName: Run GitHub Advanced Security Scan
+    type: boolean
+    default: true
+  - name: browser
+    displayName: Select a Browser
+    type: string
+    default: chromium
+    values:
+      - chromium
+      - safari
+      - firefox
+  - name: tests_run_timeout
+    type: number
+    displayName: Automated Tests Run Timeout
+    default: 10
+
+variables:
+  - group: 'Test Automation'
+  - name: vstsFeed
+    value: "0e030eb0-cb72-4f42-b99a-26e6544271c3/0a3e0ad2-23b6-4e8b-ae12-cd6d01fe97e7"
+  - name: solution
+    value: "**/*.sln"
+  - name: project
+    value: "**/*.csproj"
+  - name: buildConfiguration
+    value: "Release"
+
+resources:
+  repositories:
+    - repository: library
+      type: git
+      name: DevOps/rsp-azure-devops-library
+      ref: ${{ parameters.devops_library_branch }}
+    - repository: e2e_tests
+      type: git
+      name: 'Research Systems Programme/rsp-iras-qa'
+      ref: main
+    - repository: api_tests
+      type: git
+      name: 'Research Systems Programme/rsp-iras-api-tests'
+      ref: main
+    - repository: service_defaults
+      type: git
+      name: 'Research Systems Programme/rsp-service-defaults'
+      ref: main
+
+stages:
+  - stage: dev
+    jobs:
+      - template: jobs/build.yaml@library
+        parameters:
+          run_github_security_scan: ${{ parameters.run_github_security_scan }}
+          sonar_project_key: FutureIRAS_rsp-usermanagement-service
+          sonar_project_name: rsp-usermanagement-service
+          install_aspire: true
+          service_defaults_repo: service_defaults
+
+      #- template: jobs/deploy.yaml@library
+      - job:
+        dependsOn: Build
+        displayName: Deploy to Dev
+        steps:
+        - script: |
+            echo 'deploying to dev'
+
+  - stage: systemtest_auto
+    dependsOn: dev
+    jobs:
+      #- template: jobs/deploy.yaml@library
+      - job:
+        displayName: Deploy to SystemTest Auto
+        steps:
+        - script: |
+            echo 'deploying to systemtest_auto'
+
+      - ${{ if eq(variables.run_e2e_tests, 'true') }}:
+        - template: jobs/e2e_tests.yaml@library
+          parameters:
+            browser: ${{ parameters.browser }}
+            repo: e2e_tests
+            tests_run_timeout: ${{ parameters.tests_run_timeout }}
+
+      - ${{ if eq(variables.run_api_tests, 'true') }}:
+        - template: jobs/api_tests.yaml@library
+          parameters:
+            repo: api_tests
+
+  - stage: systemtest_manual
+    dependsOn: systemtest_auto
+    jobs:
+    - job:
+      steps:
+      - script: |
+          echo 'env: system test manual'
+
+  - stage: system_integration_test
+    dependsOn: systemtest_manual
+    jobs:
+    - job:
+      steps:
+      - script: |
+          echo 'env: system integration test'
+
+  - stage: uat
+    dependsOn: system_integration_test
+    jobs:
+    - job:
+      steps:
+      - script: |
+          echo 'env: uat'
+
+  - stage: pre_prod
+    dependsOn: uat
+    jobs:
+    - job:
+      steps:
+      - script: |
+          echo 'env: pre prod'
+
+  - stage: production
+    dependsOn: pre_prod
+    jobs:
+    - job:
+      steps:
+      - script: |
+          echo 'env: production'

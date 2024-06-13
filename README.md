@@ -1,20 +1,56 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+## Introduction
+
+This is an ASP.NET Core WebAPI project using .NET 8. This project provides a robust and scalable framework for building Web APIs and Micro services
 
 # Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
 
+## Prerequisites
+
+- .NET 8 SDK
+- Visual Studio 2022 or later
+
+## Installation
+
+1. Clone the repository
+
+```
+git clone [clone_url]/_git/[your_repo]
+```
+2. Navigate to the repository directory
+
+```
+cd [repository_directory]
+```
+
+3. Restore the packages
+```
+dotnet restore
+```
 # Build and Test
-TODO: Describe and show how to build your code and run the tests. 
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+1. To build the project, navigate to the project directory and run the following command:
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+```
+dotnet build
+```
+
+2. To run the tests, use the following command. Path to the test project is needed if you are running the tests from outside the test project directory.
+
+```
+ dotnet test .\tests\UnitTests\Rsp.UsersService.UnitTests\ --no-build
+
+ dotnet test .\tests\IntegrationTests\Rsp.UsersService.IntegrationTests\ --no-build
+```
+
+3. To run the application, use the following command:
+
+```
+dotnet run --project .\src\Startup\Rsp.UsersService\
+```
+
+if this project is part of .NET Aspire based development, include this in the .NET Aspire AppHost project
+and run the host app.
+
+```
+dotnet run --project .\src\AppHost\Rsp.UsersService.AppHost\
+```

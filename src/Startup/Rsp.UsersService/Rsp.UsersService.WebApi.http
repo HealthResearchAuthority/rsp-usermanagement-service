@@ -1,0 +1,11 @@
+# change the url and/or port number
+@baseUrl = http://localhost:{port}
+@authToken = Bearer REPLACE_ME_WITH_JWT_FOR_TESTING_BUT_DONT_COMMIT
+
+GET {{baseUrl}}/provide_endpoint_here
+Authorization: {{authToken}}
+###
+
+POST {{baseUrl}}/provide_endpoint_here
+Authorization: {{authToken}}
+###
