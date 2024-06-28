@@ -11,7 +11,18 @@ public class IrasIdentityDbContext(DbContextOptions<IrasIdentityDbContext> optio
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<IrasUser>(b => b.ToTable("Users"));
+        builder.Entity<IrasUser>(b =>
+        {
+            b.ToTable("Users");
+            b.Ignore(u => u.AccessFailedCount);
+            b.Ignore(u => u.EmailConfirmed);
+            b.Ignore(u => u.LockoutEnabled);
+            b.Ignore(u => u.LockoutEnd);
+            b.Ignore(u => u.PasswordHash);
+            b.Ignore(u => u.PhoneNumber);
+            b.Ignore(u => u.PhoneNumberConfirmed);
+            b.Ignore(u => u.TwoFactorEnabled);
+        });
 
         builder.Entity<IdentityUserClaim<string>>(b => b.ToTable("UserClaims"));
 
