@@ -14,6 +14,7 @@ using Rsp.UsersService.Configuration.Swagger;
 using Rsp.UsersService.Domain.Entities;
 using Rsp.UsersService.Extensions;
 using Rsp.UsersService.Infrastructure;
+using Rsp.UsersService.Infrastructure.Repositories;
 using Rsp.UsersService.WebApi.Extensions;
 using Azure.Identity;
 
@@ -48,10 +49,11 @@ var appSettings = appSettingsSection.Get<AppSettings>();
 // adds sql server database context
 services.AddDatabase(configuration);
 
-builder.Services
+services
     .AddIdentityApiEndpoints<IrasUser>()
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<IrasIdentityDbContext>();
+    .AddEntityFrameworkStores<IrasIdentityDbContext>()
+    .AddUserStore<UserStore<IrasUser, IdentityRole, IrasIdentityDbContext>>();
 
 // Add services to the container.
 services.AddServices();

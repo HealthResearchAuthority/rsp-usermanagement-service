@@ -43,7 +43,7 @@ public static class RegisterUserEndpoint
 
         await userStore.SetUserNameAsync(user, email, CancellationToken.None);
         await emailStore.SetEmailAsync(user, email, CancellationToken.None);
-        var result = await userManager.CreateAsync(user, UserRegisterRequest.Password);
+        var result = await userManager.CreateAsync(user);
 
         if (!result.Succeeded)
         {

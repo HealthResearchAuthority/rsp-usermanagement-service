@@ -16,7 +16,6 @@ public static class ServicesConfiguration
         // example of configuring the IoC container to inject the dependencies
 
         services.AddSingleton<ITokenHelper, TokenHelper>();
-        // services.AddMediatR(option => option.RegisterServicesFromAssemblyContaining<IApplication>())
 
         return services;
     }
