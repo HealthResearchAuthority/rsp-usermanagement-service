@@ -15,6 +15,7 @@ using Rsp.UsersService.Domain.Entities;
 using Rsp.UsersService.Extensions;
 using Rsp.UsersService.Infrastructure;
 using Rsp.UsersService.WebApi.Extensions;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,19 @@ builder.AddServiceDefaults();
 
 var services = builder.Services;
 var configuration = builder.Configuration;
+
+if (!builder.Environment.IsDevelopment())
+{
+    var azureAppConfigSection = configuration.GetSection(nameof(AppSettings));
+    var azureAppConfiguration = azureAppConfigSection.Get<AppSettings>();
+
+    // Load configuration from Azure App Configuration
+    builder.Configuration.AddAzureAppConfiguration(options =>
+        options.Connect(
+            new Uri(azureAppConfiguration!.AzureAppConfiguration.Endpoint),
+            new ManagedIdentityCredential(azureAppConfiguration.AzureAppConfiguration.IdentityClientID)));
+}
+
 
 var appSettingsSection = configuration.GetSection(nameof(AppSettings));
 var appSettings = appSettingsSection.Get<AppSettings>();
