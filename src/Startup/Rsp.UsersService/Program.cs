@@ -42,7 +42,6 @@ if (!builder.Environment.IsDevelopment())
             new ManagedIdentityCredential(azureAppConfiguration.AzureAppConfiguration.IdentityClientID)));
 }
 
-
 var appSettingsSection = configuration.GetSection(nameof(AppSettings));
 var appSettings = appSettingsSection.Get<AppSettings>();
 
@@ -92,6 +91,10 @@ services.AddHealthChecks();
 services.AddSwagger();
 
 var app = builder.Build();
+
+app.MapHealthChecks("/probes/startup");
+app.MapHealthChecks("/probes/readiness");
+app.MapHealthChecks("/probes/liveness");
 
 // if you using .NET Aspire and have added the ServiceDefaults project
 // uncomment the following line
