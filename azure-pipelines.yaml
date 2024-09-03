@@ -48,6 +48,12 @@ variables:
     value: "**/*.sln"
   - name: project
     value: "**/*.csproj"
+  - name: projectForContainerBuild
+    value: "Rsp.UsersService.csproj"
+  - name: acrContainerName
+    value: "rsp-usermanagementservice"
+  - name: containerAppName
+    value: "usermanagementservice"
   - name: buildConfiguration
     value: "Release"
 
@@ -80,15 +86,10 @@ stages:
           sonar_project_name: rsp-usermanagement-service
           install_aspire: true
           service_defaults_repo: service_defaults
-
-      #- template: jobs/deploy.yaml@library
-      - job:
-        dependsOn: Build
-        displayName: Deploy to Dev
-        steps:
-        - script: |
-            echo 'deploying to dev'
-
+      - template: jobs/deploy.yaml@library
+        parameters:
+          install_aspire: true
+          service_defaults_repo: service_defaults
   - stage: systemtest_auto
     dependsOn: dev
     jobs:
