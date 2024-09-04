@@ -51,7 +51,7 @@ variables:
   - name: projectForContainerBuild
     value: "Rsp.UsersService.csproj"
   - name: publishContainerName
-    value: "rsp-userservice"
+    value: "rsp-usersservice"
   - name: acrContainerName
     value: "rsp-usermanagementservice"
   - name: containerAppName
