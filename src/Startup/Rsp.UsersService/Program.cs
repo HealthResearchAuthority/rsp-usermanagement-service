@@ -1,7 +1,9 @@
 using System.Net.Mime;
 using System.Text.Json;
+using Azure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Rsp.Logging.Middlewares.CorrelationId;
 using Rsp.Logging.Middlewares.RequestTracing;
@@ -16,7 +18,6 @@ using Rsp.UsersService.Extensions;
 using Rsp.UsersService.Infrastructure;
 using Rsp.UsersService.Infrastructure.Repositories;
 using Rsp.UsersService.WebApi.Extensions;
-using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,10 +37,25 @@ if (!builder.Environment.IsDevelopment())
     var azureAppConfiguration = azureAppConfigSection.Get<AppSettings>();
 
     // Load configuration from Azure App Configuration
-    builder.Configuration.AddAzureAppConfiguration(options =>
-        options.Connect(
-            new Uri(azureAppConfiguration!.AzureAppConfiguration.Endpoint),
-            new ManagedIdentityCredential(azureAppConfiguration.AzureAppConfiguration.IdentityClientID)));
+    builder.Configuration.AddAzureAppConfiguration(
+        options =>
+        {
+            options.Connect
+            (
+                new Uri(azureAppConfiguration!.AzureAppConfiguration.Endpoint),
+                new ManagedIdentityCredential(azureAppConfiguration.AzureAppConfiguration.IdentityClientID)
+            )
+            .Select(KeyFilter.Any)
+            .Select(KeyFilter.Any, "users")
+            .ConfigureRefresh(refreshOptions =>
+                refreshOptions
+                .Register("AppSettings:Sentinel:UsersService", refreshAll: true)
+                .SetCacheExpiration(new TimeSpan(0, 0, 15))
+            );
+        }
+    );
+
+    services.AddAzureAppConfiguration();
 }
 
 var appSettingsSection = configuration.GetSection(nameof(AppSettings));
@@ -105,6 +121,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+else
+{
+    app.UseAzureAppConfiguration();
 }
 
 app.UseHttpsRedirection();
