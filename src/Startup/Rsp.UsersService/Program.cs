@@ -46,10 +46,10 @@ if (!builder.Environment.IsDevelopment())
                 new ManagedIdentityCredential(azureAppConfiguration.AzureAppConfiguration.IdentityClientID)
             )
             .Select(KeyFilter.Any)
-            .Select(KeyFilter.Any, "users")
+            .Select(KeyFilter.Any, AppSettings.ServiceLabel)
             .ConfigureRefresh(refreshOptions =>
                 refreshOptions
-                .Register("AppSettings:Sentinel:UsersService", refreshAll: true)
+                .Register("AppSettings:Sentinel", AppSettings.ServiceLabel, refreshAll: true)
                 .SetCacheExpiration(new TimeSpan(0, 0, 15))
             );
         }
