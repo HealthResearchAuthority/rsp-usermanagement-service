@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Net.Http.Headers;
+using Rsp.Logging.Extensions;
 using Rsp.UsersService.Application.Authentication.Helpers;
 using Rsp.UsersService.Application.Settings;
 
@@ -51,11 +52,22 @@ public static class AuthConfiguration
             },
             OnAuthenticationFailed = context =>
             {
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+                logger.LogAsWarning("Authentication Failed");
+
                 context.Fail(context.Exception);
 
                 return Task.CompletedTask;
             },
-            OnTokenValidated = _ => Task.CompletedTask
+            OnTokenValidated = context =>
+            {
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+                logger.LogAsInformation("AuthToken Validated");
+
+                return Task.CompletedTask;
+            }
         };
 
         // Enable built-in authentication of Jwt bearer token

@@ -1,6 +1,4 @@
-﻿using Rsp.IrasService.Application.Settings;
-
-namespace Rsp.UsersService.Application.Settings;
+﻿namespace Rsp.UsersService.Application.Settings;
 
 public class AppSettings
 {

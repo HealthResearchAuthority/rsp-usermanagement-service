@@ -15,7 +15,11 @@ public static class DatabaseConfiguration
     /// <param name="configuration"><see cref="IConfiguration"/></param>
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<IrasIdentityDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("IdentityDbConnection")));
+        services.AddDbContext<IrasIdentityDbContext>
+        (
+            options => options
+                .UseSqlServer(configuration.GetConnectionString("IdentityDbConnection"))
+        );
 
         return services;
     }

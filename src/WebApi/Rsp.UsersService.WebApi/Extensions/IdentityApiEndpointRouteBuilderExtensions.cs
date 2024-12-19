@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.FeatureManagement;
+using Rsp.Logging.ActionFilters;
+using Rsp.UsersService.Application.Constants;
 using Rsp.UsersService.Domain.Entities;
 using static Rsp.UsersService.WebApi.Endpoints.Roles.AddRoleClaimEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Roles.CreateRoleEndpoint;
@@ -43,7 +46,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
     /// Call <see cref="EndpointRouteBuilderExtensions.MapGroup(IEndpointRouteBuilder, string)"/> to add a prefix to all the endpoints.
     /// </param>
     /// <returns>An <see cref="IEndpointConventionBuilder"/> to further customize the added endpoints.</returns>
-    public static IEndpointConventionBuilder MapCustomizedIdentityApi<TUser, TRole>(this IEndpointRouteBuilder endpoints)
+    public static async Task<IEndpointConventionBuilder> MapCustomizedIdentityApiAsync<TUser, TRole>(this IEndpointRouteBuilder endpoints, FeatureManager featureManager)
         where TUser : IrasUser, new()
         where TRole : IdentityRole, new()
     {
@@ -54,10 +57,19 @@ public static class IdentityApiEndpointRouteBuilderExtensions
                 .MapGroup("")
                 .RequireAuthorization();
 
+        if (await featureManager.IsEnabledAsync(Features.InterceptedLogging))
+        {
+            // adding endpoint filter to all endpoints
+            routeGroup.AddEndpointFilter<LogActionFilter>();
+        }
+
         var usersGroup = routeGroup
             .MapGroup("/users")
             .WithTags("Users");
 
+        // mapping endpoints with name and type metadata
+        // this metadata will be used in LogActionFilter to create logger
+        // and get the endpoint name.
         usersGroup
             .MapGet("/all", GetAllUsers<TUser>)
             .WithDescription("Gets all users")
@@ -65,7 +77,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Get users";
                 return operation;
-            });
+            })
+            .WithName(nameof(GetAllUsers))
+            .WithMetadata(typeof(Endpoints.Users.GetAllUsersEndpoint));
 
         usersGroup
             .MapGet("/", GetUserByIdOrEmail<TUser>)
@@ -74,7 +88,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Get user";
                 return operation;
-            });
+            })
+            .WithName(nameof(GetUserByIdOrEmail))
+            .WithMetadata(typeof(Endpoints.Users.GetUserEndpoint));
 
         usersGroup
             .MapGet("/role", GetUsersInRole<TUser>)
@@ -83,7 +99,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Get users in a role";
                 return operation;
-            });
+            })
+            .WithName(nameof(GetUsersInRole))
+            .WithMetadata(typeof(Endpoints.Users.GetUsersInRoleEndpoint));
 
         usersGroup
             .MapPost("/", RegisterUser<TUser>)
@@ -92,7 +110,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Register a new user";
                 return operation;
-            });
+            })
+            .WithName(nameof(RegisterUser))
+            .WithMetadata(typeof(Endpoints.Users.RegisterUserEndpoint));
 
         usersGroup
             .MapPut("/", UpdateUser<TUser>)
@@ -101,7 +121,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Updates a user";
                 return operation;
-            });
+            })
+            .WithName(nameof(UpdateUser))
+            .WithMetadata(typeof(Endpoints.Users.UpdateUserEndpoint));
 
         usersGroup
             .MapDelete("/", DeleteUser<TUser>)
@@ -110,7 +132,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Deletes a user";
                 return operation;
-            });
+            })
+            .WithName(nameof(DeleteUser))
+            .WithMetadata(typeof(Endpoints.Users.DeleteUserEndpoint));
 
         usersGroup
             .MapPost("/roles", AddUserToRoles<TUser>)
@@ -119,7 +143,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Adds a user to role(s)";
                 return operation;
-            });
+            })
+            .WithName(nameof(AddUserToRoles))
+            .WithMetadata(typeof(Endpoints.Users.AddUserToRolesEndpoint));
 
         usersGroup
             .MapDelete("/roles", RemoveUserFromRoles<TUser>)
@@ -128,7 +154,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Removes a user from role(s)";
                 return operation;
-            });
+            })
+            .WithName(nameof(RemoveUserFromRoles))
+            .WithMetadata(typeof(Endpoints.Users.RemoveUserFromRolesEndpoint));
 
         usersGroup
             .MapGet("/claims", GetUserClaims<TUser>)
@@ -137,7 +165,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Gets user claims";
                 return operation;
-            });
+            })
+            .WithName(nameof(GetUserClaims))
+            .WithMetadata(typeof(Endpoints.Users.GetUserClaimsEndpoint));
 
         usersGroup
             .MapPost("/claims", AddUserClaims<TUser>)
@@ -146,7 +176,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Adds user claims";
                 return operation;
-            });
+            })
+            .WithName(nameof(AddUserClaims))
+            .WithMetadata(typeof(Endpoints.Users.AddUserClaimsEndpoint));
 
         usersGroup
             .MapDelete("/claims", RemoveUserClaims<TUser>)
@@ -155,7 +187,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Removes user claims";
                 return operation;
-            });
+            })
+            .WithName(nameof(RemoveUserClaims))
+            .WithMetadata(typeof(Endpoints.Users.RemoveUserClaimsEndpoint));
 
         // Roles Endpoints
         var rolesGroup = routeGroup
@@ -169,7 +203,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Get roles";
                 return operation;
-            });
+            })
+            .WithName(nameof(GetAllRoles))
+            .WithMetadata(typeof(Endpoints.Roles.GetAllRolesEndpoint));
 
         rolesGroup
             .MapPost("/", CreateRole<TRole>)
@@ -178,7 +214,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Creates a new role";
                 return operation;
-            });
+            })
+            .WithName(nameof(CreateRole))
+            .WithMetadata(typeof(Endpoints.Roles.CreateRoleEndpoint));
 
         rolesGroup
            .MapPut("/", UpdateRole<TRole>)
@@ -187,7 +225,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
            {
                operation.Summary = "Updates a role";
                return operation;
-           });
+           })
+            .WithName(nameof(UpdateRole))
+            .WithMetadata(typeof(Endpoints.Roles.UpdateRoleEndpoint));
 
         rolesGroup
             .MapDelete("/", DeleteRole<TRole>)
@@ -196,7 +236,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Deletes a role";
                 return operation;
-            });
+            })
+            .WithName(nameof(DeleteRole))
+            .WithMetadata(typeof(Endpoints.Roles.DeleteRoleEndpoint));
 
         rolesGroup
             .MapGet("/claims", GetRoleClaims<TRole>)
@@ -205,7 +247,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Gets role claims";
                 return operation;
-            });
+            })
+            .WithName(nameof(GetRoleClaims))
+            .WithMetadata(typeof(Endpoints.Roles.GetRoleClaimsEndpoint));
 
         rolesGroup
             .MapPost("/claims", AddRoleClaim<TRole>)
@@ -214,7 +258,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Adds a role claim";
                 return operation;
-            });
+            })
+            .WithName(nameof(AddRoleClaim))
+            .WithMetadata(typeof(Endpoints.Roles.AddRoleClaimEndpoint));
 
         rolesGroup
             .MapDelete("/claims", RemoveRoleClaim<TRole>)
@@ -223,7 +269,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 operation.Summary = "Removes a role claim";
                 return operation;
-            });
+            })
+            .WithName(nameof(RemoveRoleClaim))
+            .WithMetadata(typeof(Endpoints.Roles.RemoveRoleClaimEndpoint));
 
         return new IdentityEndpointsConventionBuilder(routeGroup);
     }

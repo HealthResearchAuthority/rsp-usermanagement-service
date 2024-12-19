@@ -1,0 +1,5 @@
+{
+  "FeatureManagement": {
+    "Logging.InterceptedLogging": true // Intercepts the start/end of method calls if enabled
+  }
+}

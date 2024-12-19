@@ -5,9 +5,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.FeatureManagement;
+using Rsp.Logging.ActionFilters;
+using Rsp.Logging.Extensions;
+using Rsp.Logging.Interceptors;
 using Rsp.Logging.Middlewares.CorrelationId;
 using Rsp.Logging.Middlewares.RequestTracing;
 using Rsp.ServiceDefaults;
+using Rsp.UsersService.Application.Constants;
 using Rsp.UsersService.Application.Settings;
 using Rsp.UsersService.Configuration.Auth;
 using Rsp.UsersService.Configuration.Database;
@@ -24,7 +29,9 @@ var builder = WebApplication.CreateBuilder(args);
 //Add logger
 builder
     .Configuration
-    .AddJsonFile("logsettings.json");
+    .AddJsonFile("logsettings.json")
+    .AddJsonFile("featuresettings.json", true, true)
+    .AddEnvironmentVariables();
 
 builder.AddServiceDefaults();
 
@@ -81,8 +88,15 @@ services.AddRouting(options => options.LowercaseUrls = true);
 // configures the authentication and authorization
 services.AddAuthenticationAndAuthorization(appSettings!);
 
+// Creating a feature manager without the use of DI. Injecting IFeatureManager
+// via DI is appropriate in consturctor methods. At the startup, it's
+// not recommended to call services.BuildServiceProvider and retreive IFeatureManager
+// via provider. Instead, the follwing approach is recommended by creating FeatureManager
+// with ConfigurationFeatureDefinitionProvider using the existing configuration.
+var featureManager = new FeatureManager(new ConfigurationFeatureDefinitionProvider(configuration));
+
 services
-    .AddControllers(options =>
+    .AddControllers(async options =>
     {
         options.Filters.Add(new ProducesAttribute(MediaTypeNames.Application.Json));
         options.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status200OK));
@@ -90,6 +104,11 @@ services
         options.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status403Forbidden));
         options.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
         options.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status503ServiceUnavailable));
+
+        if (await featureManager.IsEnabledAsync(Features.InterceptedLogging))
+        {
+            options.Filters.Add<LogActionFilter>();
+        }
     })
     .AddJsonOptions(options =>
     {
@@ -106,7 +125,14 @@ services.AddHealthChecks();
 // adds the Swagger for the Api Documentation
 services.AddSwagger();
 
+if (await featureManager.IsEnabledAsync(Features.InterceptedLogging))
+{
+    services.AddLoggingInterceptor<LoggingInterceptor>();
+}
+
 var app = builder.Build();
+
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
 app.MapHealthChecks("/probes/startup");
 app.MapHealthChecks("/probes/readiness");
@@ -149,9 +175,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapCustomizedIdentityApi<IrasUser, IdentityRole>();
+await app.MapCustomizedIdentityApiAsync<IrasUser, IdentityRole>(featureManager);
 
 // run the database migration and seed the data
 await app.MigrateAndSeedDatabaseAsync();
+
+logger.LogAsInformation("Starting Up");
 
 await app.RunAsync();
