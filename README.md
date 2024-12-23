@@ -2,6 +2,10 @@
 
 This is an ASP.NET Core WebAPI project using .NET 8. This project provides a robust and scalable framework for building Web APIs and Micro services
 
+# Contributing
+
+For detailed instructions on how to contribute to this project, please read [CONTRIBUTING.md](./docs/CONTRIBUTING.md) 
+
 # Getting Started
 
 ## Prerequisites
@@ -54,3 +58,6 @@ and run the host app.
 ```
 dotnet run --project .\src\AppHost\Rsp.UsersService.AppHost\
 ```
+# License
+
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details. Please see [HRA's Licensing Terms](https://dev.azure.com/FutureIRAS/Research%20Systems%20Programme/_wiki/wikis/RSP.wiki/84/Licensing-Information) for more details.

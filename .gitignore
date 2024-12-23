@@ -367,3 +367,6 @@ FodyWeavers.xsd
 
 # Don't include .sonarlint
 .sonarlint
+
+# vshistory
+.vshistory/
