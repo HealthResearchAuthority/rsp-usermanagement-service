@@ -2,9 +2,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Ardalis.Specification" Version="8.0.0" />
-		<PackageReference Include="MediatR" Version="12.3.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
-		<PackageReference Include="Microsoft.Extensions.Primitives" Version="8.0.0" />
+		<PackageReference Include="MediatR" Version="12.4.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Primitives" Version="9.0.1" />
 		<PackageReference Include="Rsp.Logging" Version="1.0.10" />
 	</ItemGroup>
 
