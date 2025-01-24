@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Rsp.UsersService.Infrastructure;
 
 namespace Rsp.UsersService.Configuration.Database;
@@ -16,10 +17,11 @@ public static class DatabaseConfiguration
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<IrasIdentityDbContext>
-        (
-            options => options
-                .UseSqlServer(configuration.GetConnectionString("IdentityDbConnection"))
-        );
+                (
+                    options => options
+                        .UseSqlServer(configuration.GetConnectionString("IdentityDbConnection"))
+                    .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning))
+                );
 
         return services;
     }
