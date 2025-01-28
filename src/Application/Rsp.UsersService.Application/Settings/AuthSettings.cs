@@ -8,9 +8,9 @@ namespace Rsp.UsersService.Application.Settings;
 public class AuthSettings
 {
     /// <summary>
-    /// The value for token issuer / authority
+    /// The value for valid issuers.
     /// </summary>
-    public string Authority { get; set; } = null!;
+    public List<string> Issuers { get; set; } = null!;
 
     /// <summary>
     /// The client identifier.
