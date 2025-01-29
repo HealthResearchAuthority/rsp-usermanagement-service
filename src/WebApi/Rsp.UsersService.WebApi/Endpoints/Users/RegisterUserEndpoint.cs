@@ -26,14 +26,15 @@ public static class RegisterUserEndpoint
     {
         var userManager = sp.GetRequiredService<UserManager<TUser>>();
 
-        var userStore = sp.GetRequiredService<IUserStore<TUser>>();
-        var emailStore = (IUserEmailStore<TUser>)userStore;
         var email = registration.Email;
 
         if (string.IsNullOrEmpty(email) || !_emailAddressAttribute.IsValid(email))
         {
             return CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidEmail(email)));
         }
+
+        var userStore = sp.GetRequiredService<IUserStore<TUser>>();
+        var emailStore = (IUserEmailStore<TUser>)userStore;
 
         var user = new TUser
         {

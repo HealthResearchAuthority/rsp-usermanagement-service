@@ -18,39 +18,21 @@ public static class GetUserClaimsEndpoint
         string? email
     ) where TUser : IrasUser, new()
     {
-        var userManager = sp.GetRequiredService<UserManager<TUser>>();
-
         if (id == null && email == null)
         {
             return CreateValidationProblem("Missing_Parameters", "Please provide id or email to search for the user");
         }
 
-        var user = (id, email) switch
-        {
-            { id: null, email: not null } => await userManager.FindByEmailAsync(email),
-            { id: not null, email: null } => await userManager.FindByIdAsync(id),
-            { id: not null, email: not null } => await userManager.FindByIdAsync(id),
-            _ => null
-        };
+        var userManager = sp.GetRequiredService<UserManager<TUser>>();
+        var user = await UserHelper.FindUserAsync(userManager, id, email);
 
         if (user == null)
         {
-            var errorMessage = (id, email) switch
-            {
-                { id: null, email: not null } => $"User with email {email} not found",
-                { id: not null, email: null } => $"User with id {id} not found",
-                { id: not null, email: not null } => $"User with id {id} or email {email} not found",
-                _ => "User not found"
-            };
-
-            return TypedResults.NotFound(errorMessage);
+            return TypedResults.NotFound(UserHelper.GetNotFoundMessage(id, email));
         }
 
         var claims = await userManager.GetClaimsAsync(user);
 
-        return TypedResults.Ok
-        (
-            claims.Select(claim => new ClaimDto(claim.Type, claim.Value))
-        );
+        return TypedResults.Ok(claims.Select(claim => new ClaimDto(claim.Type, claim.Value)));
     }
 }

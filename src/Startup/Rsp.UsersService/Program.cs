@@ -57,7 +57,7 @@ if (!builder.Environment.IsDevelopment())
             .ConfigureRefresh(refreshOptions =>
                 refreshOptions
                 .Register("AppSettings:Sentinel", AppSettings.ServiceLabel, refreshAll: true)
-                .SetCacheExpiration(new TimeSpan(0, 0, 15))
+                .SetRefreshInterval(new TimeSpan(0, 0, 15))
             );
         }
     );

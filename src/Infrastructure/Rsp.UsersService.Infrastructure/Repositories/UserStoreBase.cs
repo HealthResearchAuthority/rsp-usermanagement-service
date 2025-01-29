@@ -1,6 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#pragma warning disable S2436 // Types and methods should not have too many generic parameters
+
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
@@ -272,11 +274,25 @@ public abstract class UserStoreBase<TUser, [DynamicallyAccessedMembers(Dynamical
     /// <summary>
     /// Dispose the store
     /// </summary>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                // Dispose managed resources here.
+            }
+
+            // Dispose unmanaged resources here.
+
+            _disposed = true;
+        }
+    }
+
     public void Dispose()
     {
+        Dispose(disposing: true);
         GC.SuppressFinalize(this);
-
-        _disposed = true;
     }
 
     /// <summary>
@@ -366,7 +382,7 @@ public abstract class UserStoreBase<TUser, [DynamicallyAccessedMembers(Dynamical
     /// <param name="email">The email to set.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
     /// <returns>The task object representing the asynchronous operation.</returns>
-    public virtual Task SetEmailAsync(TUser user, string? email, CancellationToken cancellationToken = default)
+    public virtual Task SetEmailAsync(TUser user, string? email, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
@@ -381,7 +397,7 @@ public abstract class UserStoreBase<TUser, [DynamicallyAccessedMembers(Dynamical
     /// <param name="user">The user whose email should be returned.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
     /// <returns>The task object containing the results of the asynchronous operation, the email address for the specified <paramref name="user"/>.</returns>
-    public virtual Task<string?> GetEmailAsync(TUser user, CancellationToken cancellationToken = default)
+    public virtual Task<string?> GetEmailAsync(TUser user, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
@@ -397,7 +413,7 @@ public abstract class UserStoreBase<TUser, [DynamicallyAccessedMembers(Dynamical
     /// <returns>
     /// The task object containing the results of the asynchronous lookup operation, the normalized email address if any associated with the specified user.
     /// </returns>
-    public virtual Task<string?> GetNormalizedEmailAsync(TUser user, CancellationToken cancellationToken = default)
+    public virtual Task<string?> GetNormalizedEmailAsync(TUser user, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
@@ -412,7 +428,7 @@ public abstract class UserStoreBase<TUser, [DynamicallyAccessedMembers(Dynamical
     /// <param name="normalizedEmail">The normalized email to set for the specified <paramref name="user"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
     /// <returns>The task object representing the asynchronous operation.</returns>
-    public virtual Task SetNormalizedEmailAsync(TUser user, string? normalizedEmail, CancellationToken cancellationToken = default)
+    public virtual Task SetNormalizedEmailAsync(TUser user, string? normalizedEmail, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
@@ -429,7 +445,7 @@ public abstract class UserStoreBase<TUser, [DynamicallyAccessedMembers(Dynamical
     /// <returns>
     /// The task object containing the results of the asynchronous lookup operation, the user if any associated with the specified normalized email address.
     /// </returns>
-    public abstract Task<TUser?> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken = default);
+    public abstract Task<TUser?> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken);
 
     /// <summary>
     /// Sets the provided security <paramref name="stamp"/> for the specified <paramref name="user"/>.
@@ -562,3 +578,5 @@ public abstract class UserStoreBase<TUser, TRole, [DynamicallyAccessedMembers(Dy
     /// <returns>The user role if it exists.</returns>
     protected abstract Task<TUserRole?> FindUserRoleAsync(TKey userId, TKey roleId, CancellationToken cancellationToken);
 }
+
+#pragma warning restore S2436 // Types and methods should not have too many generic parameters

@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
@@ -34,6 +35,7 @@ namespace Rsp.UsersService.WebApi.Extensions;
 /// <summary>
 /// Provides extension methods for <see cref="IEndpointRouteBuilder"/> to add identity endpoints.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class IdentityApiEndpointRouteBuilderExtensions
 {
     /// <summary>
@@ -64,14 +66,14 @@ public static class IdentityApiEndpointRouteBuilderExtensions
         }
 
         var usersGroup = routeGroup
-            .MapGroup("/users")
-            .WithTags("Users");
+            .MapGroup(RoutePatterns.Users)
+            .WithTags(nameof(RoutePatterns.Users));
 
         // mapping endpoints with name and type metadata
         // this metadata will be used in LogActionFilter to create logger
         // and get the endpoint name.
         usersGroup
-            .MapGet("/all", GetAllUsers<TUser>)
+            .MapGet(RoutePatterns.All, GetAllUsers<TUser>)
             .WithDescription("Gets all users")
             .WithOpenApi(operation =>
             {
@@ -82,7 +84,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Users.GetAllUsersEndpoint));
 
         usersGroup
-            .MapGet("/", GetUserByIdOrEmail<TUser>)
+            .MapGet(RoutePatterns.Root, GetUserByIdOrEmail<TUser>)
             .WithDescription("Get user by id or email")
             .WithOpenApi(operation =>
             {
@@ -93,7 +95,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Users.GetUserEndpoint));
 
         usersGroup
-            .MapGet("/role", GetUsersInRole<TUser>)
+            .MapGet(RoutePatterns.Role, GetUsersInRole<TUser>)
             .WithDescription("Get all users in a role")
             .WithOpenApi(operation =>
             {
@@ -104,7 +106,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Users.GetUsersInRoleEndpoint));
 
         usersGroup
-            .MapPost("/", RegisterUser<TUser>)
+            .MapPost(RoutePatterns.Root, RegisterUser<TUser>)
             .WithDescription("Creates a user in the database")
             .WithOpenApi(operation =>
             {
@@ -115,7 +117,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Users.RegisterUserEndpoint));
 
         usersGroup
-            .MapPut("/", UpdateUser<TUser>)
+            .MapPut(RoutePatterns.Root, UpdateUser<TUser>)
             .WithDescription("Updates a user in the database")
             .WithOpenApi(operation =>
             {
@@ -126,7 +128,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Users.UpdateUserEndpoint));
 
         usersGroup
-            .MapDelete("/", DeleteUser<TUser>)
+            .MapDelete(RoutePatterns.Root, DeleteUser<TUser>)
             .WithDescription("Deletes a user from the database")
             .WithOpenApi(operation =>
             {
@@ -137,7 +139,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Users.DeleteUserEndpoint));
 
         usersGroup
-            .MapPost("/roles", AddUserToRoles<TUser>)
+            .MapPost(RoutePatterns.Roles, AddUserToRoles<TUser>)
             .WithDescription("Adds a user to a role or multiple roles")
             .WithOpenApi(operation =>
             {
@@ -148,7 +150,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Users.AddUserToRolesEndpoint));
 
         usersGroup
-            .MapDelete("/roles", RemoveUserFromRoles<TUser>)
+            .MapDelete(RoutePatterns.Roles, RemoveUserFromRoles<TUser>)
             .WithDescription("Removes a user from a role or multiple roles")
             .WithOpenApi(operation =>
             {
@@ -159,7 +161,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Users.RemoveUserFromRolesEndpoint));
 
         usersGroup
-            .MapGet("/claims", GetUserClaims<TUser>)
+            .MapGet(RoutePatterns.Claims, GetUserClaims<TUser>)
             .WithDescription("Gets a list of claims belonging to a user")
             .WithOpenApi(operation =>
             {
@@ -170,7 +172,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Users.GetUserClaimsEndpoint));
 
         usersGroup
-            .MapPost("/claims", AddUserClaims<TUser>)
+            .MapPost(RoutePatterns.Claims, AddUserClaims<TUser>)
             .WithDescription("Adds the claims to user")
             .WithOpenApi(operation =>
             {
@@ -181,7 +183,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Users.AddUserClaimsEndpoint));
 
         usersGroup
-            .MapDelete("/claims", RemoveUserClaims<TUser>)
+            .MapDelete(RoutePatterns.Claims, RemoveUserClaims<TUser>)
             .WithDescription("Removes the claims from user")
             .WithOpenApi(operation =>
             {
@@ -193,11 +195,11 @@ public static class IdentityApiEndpointRouteBuilderExtensions
 
         // Roles Endpoints
         var rolesGroup = routeGroup
-            .MapGroup("/roles")
-            .WithTags("Roles");
+            .MapGroup(RoutePatterns.Roles)
+            .WithTags(nameof(RoutePatterns.Roles));
 
         rolesGroup
-            .MapGet("/", GetAllRoles<TRole>)
+            .MapGet(RoutePatterns.Root, GetAllRoles<TRole>)
             .WithDescription("Gets all roles")
             .WithOpenApi(operation =>
             {
@@ -208,7 +210,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Roles.GetAllRolesEndpoint));
 
         rolesGroup
-            .MapPost("/", CreateRole<TRole>)
+            .MapPost(RoutePatterns.Root, CreateRole<TRole>)
             .WithDescription("Creates a new role in the database")
             .WithOpenApi(operation =>
             {
@@ -219,7 +221,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Roles.CreateRoleEndpoint));
 
         rolesGroup
-           .MapPut("/", UpdateRole<TRole>)
+           .MapPut(RoutePatterns.Root, UpdateRole<TRole>)
            .WithDescription("Updates a role in the database")
            .WithOpenApi(operation =>
            {
@@ -230,7 +232,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Roles.UpdateRoleEndpoint));
 
         rolesGroup
-            .MapDelete("/", DeleteRole<TRole>)
+            .MapDelete(RoutePatterns.Root, DeleteRole<TRole>)
             .WithDescription("Deletes a role from the database")
             .WithOpenApi(operation =>
             {
@@ -241,7 +243,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Roles.DeleteRoleEndpoint));
 
         rolesGroup
-            .MapGet("/claims", GetRoleClaims<TRole>)
+            .MapGet(RoutePatterns.Claims, GetRoleClaims<TRole>)
             .WithDescription("Gets a list of claims belonging to a role")
             .WithOpenApi(operation =>
             {
@@ -252,7 +254,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Roles.GetRoleClaimsEndpoint));
 
         rolesGroup
-            .MapPost("/claims", AddRoleClaim<TRole>)
+            .MapPost(RoutePatterns.Claims, AddRoleClaim<TRole>)
             .WithDescription("Adds a claim to role")
             .WithOpenApi(operation =>
             {
@@ -263,7 +265,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             .WithMetadata(typeof(Endpoints.Roles.AddRoleClaimEndpoint));
 
         rolesGroup
-            .MapDelete("/claims", RemoveRoleClaim<TRole>)
+            .MapDelete(RoutePatterns.Claims, RemoveRoleClaim<TRole>)
             .WithDescription("Removes a claim from the role")
             .WithOpenApi(operation =>
             {
