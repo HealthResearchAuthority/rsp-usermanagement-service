@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Rsp.UsersService.Application.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using NetDevPack.Security.JwtExtensions;
+using Rsp.UsersService.Application.Settings;
 
 namespace Rsp.UsersService.Configuration.Auth;
 
@@ -22,9 +22,6 @@ public static class JwtBearerConfiguration
     {
         authOptions.SetJwksOptions(new JwkOptions(appSettings.AuthSettings.JwksUri));
 
-        // Set authority / token issuer URL. This is also used by this middleware to call .well-known/jwks.json
-        authOptions.Authority = appSettings.AuthSettings.Authority;
-
         // Set a valid audience value for any received OpenIdConnect token.
         // This value is passed into TokenValidationParameters.ValidAudience if that property is empty.
         // Alternatively, set the value below in TokenValidationParameters.ValidAudience
@@ -37,7 +34,7 @@ public static class JwtBearerConfiguration
         // Note: TokenValidationParameters.ClockSkew has default value of 300 seconds (5 minutes) which can be changed by setting ClockSkew below.
         authOptions.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidIssuer = authOptions.Authority,
+            ValidIssuers = appSettings.AuthSettings.Issuers,
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateIssuerSigningKey = true,
