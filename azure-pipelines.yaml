@@ -23,10 +23,22 @@ parameters:
     displayName: DevOps Library Branch
     type: string
     default: main
+  - name: servicedefaults_library_branch
+    displayName: Service Defaults Library Branch
+    type: string
+    default: main
   - name: run_github_security_scan
     displayName: Run GitHub Advanced Security Scan
     type: boolean
     default: true
+  - name: run_sonarcloud_analysis
+    displayName: Run Sonar Cloud Analysis
+    type: boolean
+    default: true
+  - name: skip_deployment
+    displayName: Skip Deployment
+    type: boolean
+    default: false
   - name: browser
     displayName: Select a Browser
     type: string
@@ -78,7 +90,7 @@ resources:
     - repository: service_defaults
       type: git
       name: 'Research Systems Programme/rsp-service-defaults'
-      ref: main
+      ref: ${{ parameters.servicedefaults_library_branch }}
 
 stages:
   - stage: dev
@@ -91,17 +103,26 @@ stages:
           run_github_security_scan: ${{ parameters.run_github_security_scan }}
           sonar_project_key: FutureIRAS_rsp-usermanagement-service
           sonar_project_name: rsp-usermanagement-service
+          run_sonarcloud_analysis: ${{ parameters.run_sonarcloud_analysis }}
           install_aspire: true
           service_defaults_repo: service_defaults
-      - template: jobs/deploy.yaml@library
-        parameters:
-          install_aspire: true
-          service_defaults_repo: service_defaults
+
+      - ${{ if eq(parameters.skip_deployment, false) }}:
+        - template: jobs/deploy.yaml@library
+          parameters:
+            depends_on: 'Build'
+            install_aspire: true
+            service_defaults_repo: service_defaults
+
   - stage: systemtest_auto
     variables: 
     - group: 'STAutoEnvironment'
     condition: eq('${{ parameters.env }}', 'systemtest_auto')
     jobs:
+      - job:
+        steps:
+        - script: |
+            echo 'env: system test auto'
       - template: jobs/deploy.yaml@library
         parameters:
           install_aspire: true
