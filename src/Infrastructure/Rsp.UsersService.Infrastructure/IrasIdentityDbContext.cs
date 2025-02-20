@@ -26,9 +26,9 @@ public class IrasIdentityDbContext(DbContextOptions<IrasIdentityDbContext> optio
 
         builder.Entity<IdentityUserClaim<string>>(b => b.ToTable("UserClaims"));
 
-        builder.Entity<IdentityUserLogin<string>>(b => b.ToTable("UserLogins"));
+        builder.Entity<IdentityUserLogin<string>>(b => b.ToTable("UserLogins", t => t.ExcludeFromMigrations()));
 
-        builder.Entity<IdentityUserToken<string>>(b => b.ToTable("UserTokens"));
+        builder.Entity<IdentityUserToken<string>>(b => b.ToTable("UserTokens", t => t.ExcludeFromMigrations()));
 
         builder.Entity<IdentityRole>(b => b.ToTable("Roles"));
 
