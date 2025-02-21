@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Rsp.UsersService.Domain.Entities;
@@ -6,6 +7,7 @@ using Rsp.UsersService.Infrastructure.SeedData;
 
 namespace Rsp.UsersService.Infrastructure;
 
+[ExcludeFromCodeCoverage]
 public class IrasIdentityDbContext(DbContextOptions<IrasIdentityDbContext> options) : IdentityDbContext<IrasUser>(options)
 {
     protected override void OnModelCreating(ModelBuilder builder)
