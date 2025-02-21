@@ -11,9 +11,11 @@
     <ProjectReference Include="..\..\Application\Rsp.UsersService.Application\Rsp.UsersService.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="SeedData\" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Update="Data\Roles.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
