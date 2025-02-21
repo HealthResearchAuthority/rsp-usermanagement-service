@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Rsp.UsersService.Domain.Entities;
+using Rsp.UsersService.Infrastructure.SeedData;
 
 namespace Rsp.UsersService.Infrastructure;
 
@@ -30,7 +31,11 @@ public class IrasIdentityDbContext(DbContextOptions<IrasIdentityDbContext> optio
 
         builder.Entity<IdentityUserToken<string>>(b => b.ToTable("UserTokens", t => t.ExcludeFromMigrations()));
 
-        builder.Entity<IdentityRole>(b => b.ToTable("Roles"));
+        builder.Entity<IdentityRole>(b =>
+        {
+            b.ToTable("Roles");
+            b.HasData(UserData.SeedRoles());
+        });
 
         builder.Entity<IdentityRoleClaim<string>>(b => b.ToTable("RoleClaims"));
 
