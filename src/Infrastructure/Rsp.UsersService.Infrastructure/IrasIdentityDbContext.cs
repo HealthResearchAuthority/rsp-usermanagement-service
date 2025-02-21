@@ -30,7 +30,40 @@ public class IrasIdentityDbContext(DbContextOptions<IrasIdentityDbContext> optio
 
         builder.Entity<IdentityUserToken<string>>(b => b.ToTable("UserTokens", t => t.ExcludeFromMigrations()));
 
-        builder.Entity<IdentityRole>(b => b.ToTable("Roles"));
+        builder.Entity<IdentityRole>(b =>
+        {
+            b.ToTable("Roles");
+            b.HasData([
+                new()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "reviewer",
+                    NormalizedName = "REVIEWER",
+                    ConcurrencyStamp = Guid.NewGuid().ToString()
+                },
+                new()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "admin",
+                    NormalizedName = "ADMIN",
+                    ConcurrencyStamp = Guid.NewGuid().ToString()
+                },
+                new()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "user",
+                    NormalizedName = "USER",
+                    ConcurrencyStamp = Guid.NewGuid().ToString()
+                },
+                new()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "question_set_admin",
+                    NormalizedName = "QUESTION_SET_ADMIN",
+                    ConcurrencyStamp = Guid.NewGuid().ToString()
+                }
+            ]);
+        });
 
         builder.Entity<IdentityRoleClaim<string>>(b => b.ToTable("RoleClaims"));
 
