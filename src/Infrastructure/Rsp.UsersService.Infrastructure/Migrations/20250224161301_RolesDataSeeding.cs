@@ -12,14 +12,6 @@ namespace Rsp.UsersService.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_IdentityUserLogin<string>_Users_UserId",
-                table: "IdentityUserLogin<string>");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_IdentityUserToken<string>_Users_UserId",
-                table: "IdentityUserToken<string>");
-
             migrationBuilder.InsertData(
                 table: "Roles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
@@ -54,22 +46,6 @@ namespace Rsp.UsersService.Infrastructure.Migrations
                 table: "Roles",
                 keyColumn: "Id",
                 keyValue: "ddac109a-e4ad-4572-a175-7795f81ec0e7");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_IdentityUserLogin<string>_Users_UserId",
-                table: "IdentityUserLogin<string>",
-                column: "UserId",
-                principalTable: "Users",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_IdentityUserToken<string>_Users_UserId",
-                table: "IdentityUserToken<string>",
-                column: "UserId",
-                principalTable: "Users",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
     }
 }
