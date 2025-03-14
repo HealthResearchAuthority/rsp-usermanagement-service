@@ -72,7 +72,7 @@ public class GetAllUsersEndpointTests : TestServiceBase
         var expectedUsers = users
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
-            .Select(u => new UserDto(u.Id, u.FirstName, u.LastName, u.Email!));
+            .Select(u => new UserDto(u.Id, u.FirstName, u.LastName, u.Email!, u.Title, u.JobTitle, u.Organisation, u.Telephone, u.Country, u.Status, u.LastUpdated, u.LastUpdated));
 
         okResult.Value.Users.ShouldBe(expectedUsers, ignoreOrder: true);
     }

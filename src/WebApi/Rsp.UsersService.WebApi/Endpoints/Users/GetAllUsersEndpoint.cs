@@ -43,7 +43,15 @@ public static class GetAllUsersEndpoint
                         user.Id,
                         user.FirstName,
                         user.LastName,
-                        user.Email!
+                        user.Email!,
+                        user.Title,
+                        user.JobTitle,
+                        user.Organisation,
+                        user.Telephone,
+                        user.Country,
+                        user.Status,
+                        user.LastLogin,
+                        user.LastUpdated
                     )
                 ),
                 TotalCount = await userManager.Users.CountAsync()

@@ -44,6 +44,13 @@ public static class UpdateUserEndpoint
 
         user.FirstName = newUserDetails.FirstName;
         user.LastName = newUserDetails.LastName;
+        user.Title = newUserDetails.Title;
+        user.Telephone = newUserDetails.Telephone;
+        user.Organisation = newUserDetails.Organisation;
+        user.Country = newUserDetails.Country;
+        user.JobTitle = newUserDetails.JobTitle;
+        user.LastUpdated = newUserDetails.LastUpdated;
+        user.Status = newUserDetails.Status;
 
         await userStore.SetUserNameAsync(user, newUserDetails.Email, CancellationToken.None);
         await emailStore.SetEmailAsync(user, newUserDetails.Email, CancellationToken.None);
