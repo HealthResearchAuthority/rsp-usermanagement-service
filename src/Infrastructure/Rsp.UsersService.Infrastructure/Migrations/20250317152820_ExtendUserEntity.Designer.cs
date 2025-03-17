@@ -12,8 +12,8 @@ using Rsp.UsersService.Infrastructure;
 namespace Rsp.UsersService.Infrastructure.Migrations
 {
     [DbContext(typeof(IrasIdentityDbContext))]
-    [Migration("20250313110221_ExtendIrasUserEntity")]
-    partial class ExtendIrasUserEntity
+    [Migration("20250317152820_ExtendUserEntity")]
+    partial class ExtendUserEntity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
