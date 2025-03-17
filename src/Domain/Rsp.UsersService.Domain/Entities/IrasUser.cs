@@ -4,7 +4,7 @@ namespace Rsp.UsersService.Domain.Entities;
 
 public class IrasUser : IdentityUser
 {
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; } = null!;
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public string? Telephone { get; set; } = null;

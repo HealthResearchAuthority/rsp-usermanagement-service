@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rsp.UsersService.Infrastructure;
 
@@ -11,9 +12,11 @@ using Rsp.UsersService.Infrastructure;
 namespace Rsp.UsersService.Infrastructure.Migrations
 {
     [DbContext(typeof(IrasIdentityDbContext))]
-    partial class IrasIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250317185004_MakeUserTitleOptionalEntity")]
+    partial class MakeUserTitleOptionalEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
