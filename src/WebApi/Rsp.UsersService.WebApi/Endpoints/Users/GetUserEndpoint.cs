@@ -36,7 +36,18 @@ public static class GetUserEndpoint
 
         return TypedResults.Ok(new UserResponse
         {
-            User = new UserDto(user.Id, user.FirstName, user.LastName, user.Email!),
+            User = new UserDto(user.Id,
+            user.FirstName,
+            user.LastName,
+            user.Email!,
+            user.Title,
+            user.JobTitle,
+            user.Organisation,
+            user.Telephone,
+            user.Country,
+            user.Status,
+            user.LastLogin,
+            user.LastUpdated),
             Roles = roles.AsEnumerable()
         });
     }

@@ -33,17 +33,32 @@ public static class RegisterUserEndpoint
             return CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidEmail(email)));
         }
 
+        // check for existing user
+        var duplicateUser = await userManager.FindByEmailAsync(email);
+        if (duplicateUser != null)
+        {
+            return CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.DuplicateEmail(email)));
+        }
+
         var userStore = sp.GetRequiredService<IUserStore<TUser>>();
         var emailStore = (IUserEmailStore<TUser>)userStore;
 
         var user = new TUser
         {
             FirstName = registration.FirstName,
-            LastName = registration.LastName
+            LastName = registration.LastName,
+            Telephone = registration.Telephone,
+            Country = registration.Country,
+            Title = registration.Title,
+            JobTitle = registration.JobTitle,
+            Organisation = registration.Organisation,
+            Status = registration.Status,
+            LastUpdated = registration.LastUpdated,
         };
 
         await userStore.SetUserNameAsync(user, email, CancellationToken.None);
         await emailStore.SetEmailAsync(user, email, CancellationToken.None);
+
         var result = await userManager.CreateAsync(user);
 
         if (!result.Succeeded)
