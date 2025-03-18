@@ -2,9 +2,11 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.FeatureManagement;
 using Microsoft.Net.Http.Headers;
 using Rsp.Logging.Extensions;
 using Rsp.UsersService.Application.Authentication.Helpers;
+using Rsp.UsersService.Application.Constants;
 using Rsp.UsersService.Application.Settings;
 
 namespace Rsp.UsersService.Configuration.Auth;
@@ -33,22 +35,31 @@ public static class AuthConfiguration
     {
         var events = new JwtBearerEvents
         {
-            OnMessageReceived = context =>
+            OnMessageReceived = async context =>
             {
                 var tokenHelper = context.Request.HttpContext.RequestServices.GetRequiredService<ITokenHelper>();
                 var authorization = context.Request.Headers[HeaderNames.Authorization];
 
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
                 // If no authorization header found, nothing to process further
-                if (string.IsNullOrEmpty(authorization))
+                if (string.IsNullOrWhiteSpace(authorization))
                 {
+                    logger.LogAsWarning("Authorization header is empty");
+
                     context.NoResult();
-                    return Task.CompletedTask;
+                    return;
                 }
 
                 // if authorization starts with "Bearer " replace that with empty string
                 context.Token = tokenHelper.DeBearerizeAuthToken(authorization);
 
-                return Task.CompletedTask;
+                var featureManager = context.HttpContext.RequestServices.GetRequiredService<IFeatureManager>();
+
+                if (await featureManager.IsEnabledAsync(Features.AuthTokenLogging))
+                {
+                    logger.LogAsWarning($"AuthToken: {context.Token}", "Auth Token logging is enabled");
+                }
             },
             OnAuthenticationFailed = context =>
             {
