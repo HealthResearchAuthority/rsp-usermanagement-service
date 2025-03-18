@@ -12,8 +12,8 @@ using Rsp.UsersService.Infrastructure;
 namespace Rsp.UsersService.Infrastructure.Migrations
 {
     [DbContext(typeof(IrasIdentityDbContext))]
-    [Migration("20250313110221_ExtendIrasUserEntity")]
-    partial class ExtendIrasUserEntity
+    [Migration("20250317185004_MakeUserTitleOptionalEntity")]
+    partial class MakeUserTitleOptionalEntity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -256,7 +256,6 @@ namespace Rsp.UsersService.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
