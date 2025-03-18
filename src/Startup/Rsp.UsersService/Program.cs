@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FeatureManagement;
+using Microsoft.Net.Http.Headers;
 using Rsp.Logging.ActionFilters;
 using Rsp.Logging.Extensions;
 using Rsp.Logging.Interceptors;
@@ -37,6 +38,9 @@ builder.AddServiceDefaults();
 
 var services = builder.Services;
 var configuration = builder.Configuration;
+
+// this will use the FeatureManagement section
+services.AddFeatureManagement();
 
 if (!builder.Environment.IsDevelopment())
 {
@@ -133,6 +137,20 @@ if (await featureManager.IsEnabledAsync(Features.InterceptedLogging))
 var app = builder.Build();
 
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
+// first middleware to log if the Authorization
+// header is present or not.
+app.Use(async (context, next) =>
+{
+    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+    var authorization = context.Request.Headers[HeaderNames.Authorization];
+    if (authorization.Count == 0)
+    {
+        logger.LogAsWarning("Authorization header is not present in the request");
+    }
+
+    await next();
+});
 
 app.MapHealthChecks("/probes/startup");
 app.MapHealthChecks("/probes/readiness");
