@@ -28,6 +28,7 @@ public static class GetAllUsersEndpoint
 
         var users = await userManager
             .Users
+            .OrderBy(u => u.FirstName)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
