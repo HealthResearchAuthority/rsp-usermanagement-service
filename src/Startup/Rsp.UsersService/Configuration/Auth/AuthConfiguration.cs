@@ -66,6 +66,7 @@ public static class AuthConfiguration
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
 
                 logger.LogAsWarning("Authentication Failed");
+                logger.LogAsError("ERR_API_AUTH_FAILED", "API Authetication failed", context.Exception);
 
                 context.Fail(context.Exception);
 
