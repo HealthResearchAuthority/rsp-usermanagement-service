@@ -38,6 +38,8 @@ builder.AddServiceDefaults();
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+services.AddFeatureManagement();
+
 if (!builder.Environment.IsDevelopment())
 {
     var azureAppConfigSection = configuration.GetSection(nameof(AppSettings));

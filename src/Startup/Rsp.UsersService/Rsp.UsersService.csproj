@@ -17,9 +17,9 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.1" />
+        <PackageReference Include="Microsoft.FeatureManagement" Version="4.0.0" />
         <PackageReference Include="NetDevPack.Security.JwtExtensions" Version="8.0.0" />
     </ItemGroup>
-
     <ItemGroup>
         <ProjectReference Include="..\..\..\..\rsp-service-defaults\src\Rsp.ServiceDefaults\Rsp.ServiceDefaults.csproj" />
         <ProjectReference Include="..\..\Infrastructure\Rsp.UsersService.Infrastructure\Rsp.UsersService.Infrastructure.csproj" />
