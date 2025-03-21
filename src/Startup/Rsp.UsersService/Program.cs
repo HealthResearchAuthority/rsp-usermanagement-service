@@ -72,12 +72,16 @@ var appSettings = appSettingsSection.Get<AppSettings>();
 
 // adds sql server database context
 services.AddDatabase(configuration);
-
 services
     .AddIdentityApiEndpoints<IrasUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<IrasIdentityDbContext>()
     .AddUserStore<UserStore<IrasUser, IdentityRole, IrasIdentityDbContext>>();
+
+services.Configure<IdentityOptions>(options =>
+{
+    options.User.AllowedUserNameCharacters = ""; // allow for all special characters in emails
+});
 
 // Add services to the container.
 services.AddServices();
