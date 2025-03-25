@@ -1,9 +1,7 @@
 using System.Net.Mime;
 using System.Text.Json;
-using Azure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FeatureManagement;
 using Rsp.Logging.ActionFilters;
@@ -14,6 +12,7 @@ using Rsp.Logging.Middlewares.RequestTracing;
 using Rsp.ServiceDefaults;
 using Rsp.UsersService.Application.Constants;
 using Rsp.UsersService.Application.Settings;
+using Rsp.UsersService.Configuration.AppConfiguration;
 using Rsp.UsersService.Configuration.Auth;
 using Rsp.UsersService.Configuration.Database;
 using Rsp.UsersService.Configuration.Dependencies;
@@ -42,29 +41,7 @@ services.AddFeatureManagement();
 
 if (!builder.Environment.IsDevelopment())
 {
-    var azureAppConfigSection = configuration.GetSection(nameof(AppSettings));
-    var azureAppConfiguration = azureAppConfigSection.Get<AppSettings>();
-
-    // Load configuration from Azure App Configuration
-    builder.Configuration.AddAzureAppConfiguration(
-        options =>
-        {
-            options.Connect
-            (
-                new Uri(azureAppConfiguration!.AzureAppConfiguration.Endpoint),
-                new ManagedIdentityCredential(azureAppConfiguration.AzureAppConfiguration.IdentityClientID)
-            )
-            .Select(KeyFilter.Any)
-            .Select(KeyFilter.Any, AppSettings.ServiceLabel)
-            .ConfigureRefresh(refreshOptions =>
-                refreshOptions
-                .Register("AppSettings:Sentinel", AppSettings.ServiceLabel, refreshAll: true)
-                .SetRefreshInterval(new TimeSpan(0, 0, 15))
-            );
-        }
-    );
-
-    services.AddAzureAppConfiguration();
+    services.AddAzureAppConfiguration(configuration);
 }
 
 var appSettingsSection = configuration.GetSection(nameof(AppSettings));
@@ -92,7 +69,7 @@ services.AddHttpContextAccessor();
 services.AddRouting(options => options.LowercaseUrls = true);
 
 // configures the authentication and authorization
-services.AddAuthenticationAndAuthorization(appSettings!);
+services.AddAuthenticationAndAuthorization(appSettings!, configuration);
 
 // Creating a feature manager without the use of DI. Injecting IFeatureManager
 // via DI is appropriate in consturctor methods. At the startup, it's

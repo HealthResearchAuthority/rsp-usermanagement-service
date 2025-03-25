@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
 using NetDevPack.Security.JwtExtensions;
+using Rsp.UsersService.Application.Constants;
 using Rsp.UsersService.Application.Settings;
 
 namespace Rsp.UsersService.Configuration.Auth;
@@ -18,7 +20,8 @@ public static class JwtBearerConfiguration
     /// <param name="authOptions"><see cref="JwtBearerOptions"/></param>
     /// <param name="appSettings">Application Settings</param>
     /// <param name="jwtBearerEvents"><see cref="JwtBearerEvents"/></param>
-    public static void Configure(JwtBearerOptions authOptions, AppSettings appSettings, JwtBearerEvents jwtBearerEvents)
+    /// <param name="featureManager"><see cref="IFeatureManager"/></param>
+    public static async Task Configure(JwtBearerOptions authOptions, AppSettings appSettings, JwtBearerEvents jwtBearerEvents, IFeatureManager featureManager)
     {
         authOptions.SetJwksOptions(new JwkOptions(appSettings.AuthSettings.JwksUri));
 
@@ -26,7 +29,11 @@ public static class JwtBearerConfiguration
         // This value is passed into TokenValidationParameters.ValidAudience if that property is empty.
         // Alternatively, set the value below in TokenValidationParameters.ValidAudience
         // or TokenValidationParameters.ValidAudiences (if more than one audience)
-        authOptions.Audience = appSettings.AuthSettings.ClientId;
+
+        // check if Gov UK One Login integration is enabled
+        var oneLoginEnabled = await featureManager.IsEnabledAsync(Features.OneLogin);
+
+        authOptions.Audience = oneLoginEnabled ? appSettings.OneLogin.ClientId : appSettings.AuthSettings.ClientId;
         authOptions.RequireHttpsMetadata = true;
         authOptions.SaveToken = true;
 
@@ -34,7 +41,7 @@ public static class JwtBearerConfiguration
         // Note: TokenValidationParameters.ClockSkew has default value of 300 seconds (5 minutes) which can be changed by setting ClockSkew below.
         authOptions.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidIssuers = appSettings.AuthSettings.Issuers,
+            ValidIssuers = oneLoginEnabled ? appSettings.OneLogin.Issuers : appSettings.AuthSettings.Issuers,
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateIssuerSigningKey = true,
