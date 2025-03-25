@@ -8,6 +8,6 @@ public static class Features
     // Intercepts the start/end of method calls if enabled
     public const string InterceptedLogging = "Logging.InterceptedLogging";
 
-    // Logs the AuthToken if enabled
-    public const string AuthTokenLogging = "Logging.AuthTokenLogging";
+    // Uses Gov UK One Login if enabled
+    public const string OneLogin = "Auth.UseOneLogin";
 }

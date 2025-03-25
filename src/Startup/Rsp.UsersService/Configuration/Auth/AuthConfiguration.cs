@@ -6,7 +6,6 @@ using Microsoft.FeatureManagement;
 using Microsoft.Net.Http.Headers;
 using Rsp.Logging.Extensions;
 using Rsp.UsersService.Application.Authentication.Helpers;
-using Rsp.UsersService.Application.Constants;
 using Rsp.UsersService.Application.Settings;
 
 namespace Rsp.UsersService.Configuration.Auth;
@@ -22,20 +21,20 @@ public static class AuthConfiguration
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/></param>
     /// <param name="appSettings">Application Settinghs</param>
-    public static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection services, AppSettings appSettings)
+    public static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection services, AppSettings appSettings, IConfiguration config)
     {
-        ConfigureJwt(services, appSettings);
+        ConfigureJwt(services, appSettings, config);
 
         ConfigureAuthorization(services);
 
         return services;
     }
 
-    private static void ConfigureJwt(IServiceCollection services, AppSettings appSettings)
+    private static void ConfigureJwt(IServiceCollection services, AppSettings appSettings, IConfiguration config)
     {
         var events = new JwtBearerEvents
         {
-            OnMessageReceived = async context =>
+            OnMessageReceived = context =>
             {
                 var tokenHelper = context.Request.HttpContext.RequestServices.GetRequiredService<ITokenHelper>();
                 var authorization = context.Request.Headers[HeaderNames.Authorization];
@@ -48,18 +47,13 @@ public static class AuthConfiguration
                     logger.LogAsWarning("Authorization header is empty");
 
                     context.NoResult();
-                    return;
+                    return Task.CompletedTask;
                 }
 
                 // if authorization starts with "Bearer " replace that with empty string
                 context.Token = tokenHelper.DeBearerizeAuthToken(authorization);
 
-                var featureManager = context.HttpContext.RequestServices.GetRequiredService<IFeatureManager>();
-
-                if (await featureManager.IsEnabledAsync(Features.AuthTokenLogging))
-                {
-                    logger.LogAsWarning($"AuthToken: {context.Token}", "Auth Token logging is enabled");
-                }
+                return Task.CompletedTask;
             },
             OnAuthenticationFailed = context =>
             {
@@ -82,11 +76,13 @@ public static class AuthConfiguration
             }
         };
 
+        var featureManager = new FeatureManager(new ConfigurationFeatureDefinitionProvider(config));
+
         // Enable built-in authentication of Jwt bearer token
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             // using the scheme JwtBearerDefaults.AuthenticationScheme (Bearer)
-            .AddJwtBearer(authOptions => JwtBearerConfiguration.Configure(authOptions, appSettings, events));
+            .AddJwtBearer(async authOptions => await JwtBearerConfiguration.Configure(authOptions, appSettings, events, featureManager));
     }
 
     private static void ConfigureAuthorization(IServiceCollection services)
