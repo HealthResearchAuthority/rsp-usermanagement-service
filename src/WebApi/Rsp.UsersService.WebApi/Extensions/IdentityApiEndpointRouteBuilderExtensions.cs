@@ -22,6 +22,7 @@ using static Rsp.UsersService.WebApi.Endpoints.Users.AddUserClaimsEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.AddUserToRolesEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.DeleteUserEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.GetAllUsersEndpoint;
+using static Rsp.UsersService.WebApi.Endpoints.Users.GetUserAuditTrailEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.GetUserClaimsEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.GetUserEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.GetUsersInRoleEndpoint;
@@ -192,6 +193,17 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             })
             .WithName(nameof(RemoveUserClaims))
             .WithMetadata(typeof(Endpoints.Users.RemoveUserClaimsEndpoint));
+
+        usersGroup
+            .MapGet(RoutePatterns.Audit, GetUserAuditTrail)
+            .WithDescription("Get a user's audit trail")
+            .WithOpenApi(operation =>
+            {
+                operation.Summary = "Get user audit trail";
+                return operation;
+            })
+            .WithName(nameof(GetUserAuditTrail))
+            .WithMetadata(typeof(Endpoints.Users.GetUserAuditTrailEndpoint));
 
         // Roles Endpoints
         var rolesGroup = routeGroup

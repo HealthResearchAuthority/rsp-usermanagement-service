@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Xunit2;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Moq;
@@ -37,10 +38,13 @@ public class RegisterUserEndpointTests : TestServiceBase
             .Setup(x => x.GetService(typeof(UserManager<IrasUser>)))
             .Returns(userManager.Object);
 
+        var httpContext = new DefaultHttpContext();
+
         var result = await RegisterUserEndpoint.RegisterUser<IrasUser>
         (
             registration,
-            Mocker.Get<IServiceProvider>()
+            Mocker.Get<IServiceProvider>(),
+            httpContext
         );
 
         result.Result.ShouldBeOfType<ValidationProblem>();
@@ -68,10 +72,13 @@ public class RegisterUserEndpointTests : TestServiceBase
             .Setup(x => x.GetService(typeof(IUserStore<IrasUser>)))
             .Returns(emailStore.Object);
 
+        var httpContext = new DefaultHttpContext();
+
         var result = await RegisterUserEndpoint.RegisterUser<IrasUser>
         (
             registration,
-            Mocker.Get<IServiceProvider>()
+            Mocker.Get<IServiceProvider>(),
+            httpContext
         );
 
         result.Result.ShouldBeOfType<NoContent>();
@@ -121,10 +128,13 @@ public class RegisterUserEndpointTests : TestServiceBase
             .Setup(x => x.GetService(typeof(IUserStore<IrasUser>)))
             .Returns(emailStore.Object);
 
+        var httpContext = new DefaultHttpContext();
+
         var result = await RegisterUserEndpoint.RegisterUser<IrasUser>
         (
             registration,
-            Mocker.Get<IServiceProvider>()
+            Mocker.Get<IServiceProvider>(),
+            httpContext
         );
 
         result.Result.ShouldBeOfType<ValidationProblem>();

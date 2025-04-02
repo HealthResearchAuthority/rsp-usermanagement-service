@@ -13,20 +13,6 @@
 
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Authorization\Attributes\" />
-	  <Folder Include="Authorization\Requirements\" />
-	  <Folder Include="Contracts\Repositories\" />
-	  <Folder Include="Contracts\Services\" />
-	  <Folder Include="CQRS\Commands\" />
-	  <Folder Include="CQRS\Handlers\CommandHandlers\" />
-	  <Folder Include="CQRS\Handlers\QueryHandlers\" />
-	  <Folder Include="CQRS\Queries\" />
-	  <Folder Include="DTOS\Requests\" />
-	  <Folder Include="DTOS\Responses\" />
-	  <Folder Include="Specifications\" />
-	</ItemGroup>
-
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
