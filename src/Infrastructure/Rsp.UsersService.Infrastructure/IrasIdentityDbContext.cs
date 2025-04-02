@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Rsp.UsersService.Domain.Entities;
+using Rsp.UsersService.Infrastructure.EntitiesConfiguration;
 using Rsp.UsersService.Infrastructure.SeedData;
 
 namespace Rsp.UsersService.Infrastructure;
@@ -10,6 +11,8 @@ namespace Rsp.UsersService.Infrastructure;
 [ExcludeFromCodeCoverage]
 public class IrasIdentityDbContext(DbContextOptions<IrasIdentityDbContext> options) : IdentityDbContext<IrasUser>(options)
 {
+    public DbSet<UserAuditTrail> UserAuditTrails { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -42,5 +45,7 @@ public class IrasIdentityDbContext(DbContextOptions<IrasIdentityDbContext> optio
         builder.Entity<IdentityRoleClaim<string>>(b => b.ToTable("RoleClaims"));
 
         builder.Entity<IdentityUserRole<string>>(b => b.ToTable("UserRoles"));
+
+        builder.ApplyConfiguration(new UserAuditTrailConfiguration());
     }
 }

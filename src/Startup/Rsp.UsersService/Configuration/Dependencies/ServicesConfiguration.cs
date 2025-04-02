@@ -1,4 +1,6 @@
-﻿using Rsp.UsersService.Application.Authentication.Helpers;
+﻿using Rsp.UsersService.Application;
+using Rsp.UsersService.Application.Authentication.Helpers;
+using Rsp.UsersService.Infrastructure.Repositories;
 
 namespace Rsp.UsersService.Configuration.Dependencies;
 
@@ -16,6 +18,7 @@ public static class ServicesConfiguration
         // example of configuring the IoC container to inject the dependencies
 
         services.AddSingleton<ITokenHelper, TokenHelper>();
+        services.AddTransient<IAuditTrailRepository, AuditTrailRepository>();
 
         return services;
     }

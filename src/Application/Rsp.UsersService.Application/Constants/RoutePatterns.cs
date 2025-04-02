@@ -8,4 +8,5 @@ public static class RoutePatterns
     public const string Role = "/role";
     public const string Roles = "/roles";
     public const string Claims = "/claims";
+    public const string Audit = "/audit";
 }

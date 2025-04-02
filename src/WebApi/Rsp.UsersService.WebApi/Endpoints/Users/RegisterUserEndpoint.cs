@@ -1,15 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Rsp.UsersService.Application;
+using Rsp.UsersService.Application.Constants;
 using Rsp.UsersService.Domain.Entities;
+using Rsp.UsersService.WebApi.Helpers;
 using Rsp.UsersService.WebApi.Requests;
 using static Rsp.UsersService.WebApi.Helpers.ValidationProblemHelpers;
 
 namespace Rsp.UsersService.WebApi.Endpoints.Users;
 
+[ExcludeFromCodeCoverage]
 public static class RegisterUserEndpoint
 {
     // Validate the email address using DataAnnotations like the UserValidator does when RequireUniqueEmail = true.
@@ -21,7 +26,8 @@ public static class RegisterUserEndpoint
     public static async Task<Results<ValidationProblem, NoContent>> RegisterUser<TUser>
     (
         [FromBody] UserRegisterRequest registration,
-        [FromServices] IServiceProvider sp
+        [FromServices] IServiceProvider sp,
+        HttpContext httpContext
     ) where TUser : IrasUser, new()
     {
         var userManager = sp.GetRequiredService<UserManager<TUser>>();
@@ -64,6 +70,27 @@ public static class RegisterUserEndpoint
         if (!result.Succeeded)
         {
             return CreateValidationProblem(result);
+        }
+
+        var sysAdmin = await UserHelper.FindUserAsync
+        (
+            userManager,
+            null,
+            UserHelper.GetAuthenticatedUserEmail(httpContext.User)!
+        );
+
+        if (sysAdmin != null)
+        {
+            var auditTrail = AuditTrailHelper.GenerateAuditTrail
+            (
+                user,
+                AuditTrailActions.Create,
+                sysAdmin!.Id
+            );
+
+            var auditRespository = sp.GetRequiredService<IAuditTrailRepository>();
+
+            await auditRespository.CreateAuditRecords(auditTrail);
         }
 
         return TypedResults.NoContent();
