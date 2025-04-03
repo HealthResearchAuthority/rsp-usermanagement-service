@@ -97,10 +97,9 @@ resources:
       ref: ${{ parameters.servicedefaults_library_branch }}
 
 stages:
-  - stage: dev
-    variables: 
-    - group: 'DevelopmentEnvironment'
-    condition: eq('${{ parameters.env }}', 'dev')
+  - stage: Build
+    displayName: "Build Stage"
+    condition: eq('${{ parameters.env }}', 'dev')  # Only build for dev environment
     jobs:
       - template: jobs/build.yaml@library
         parameters:
@@ -111,11 +110,16 @@ stages:
           install_aspire: true
           service_defaults_repo: service_defaults
           
-      - ${{ if eq(parameters.skip_deployment, false) }}:
-        - template: jobs/deploy.yaml@library
-          parameters:
-            install_aspire: true
-            service_defaults_repo: service_defaults
+  - stage: dev
+    displayName: "Deploy to Development"
+    variables: 
+      - group: 'DevelopmentEnvironment'
+    condition: and(eq('${{ parameters.env }}', 'dev'), eq('${{ parameters.skip_deployment }}', 'false'))
+    jobs:
+      - template: jobs/deploy.yaml@library
+        parameters:
+          install_aspire: true
+          service_defaults_repo: service_defaults
 
   - stage: systemtest_auto
     variables: 
