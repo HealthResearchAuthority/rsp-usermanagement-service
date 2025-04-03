@@ -38,7 +38,7 @@ parameters:
   - name: skip_deployment
     displayName: Skip Deployment
     type: boolean
-    default: false
+    default: true
   - name: browser
     displayName: Select a Browser
     type: string
@@ -100,11 +100,7 @@ stages:
   - stage: dev
     variables: 
     - group: 'DevelopmentEnvironment'
-    condition: |
-      and(
-        eq('${{ parameters.env }}', 'dev'),
-        ne(variables['Build.Reason'], 'PullRequest')
-      )
+    condition: eq('${{ parameters.env }}', 'dev')
     jobs:
       - template: jobs/build.yaml@library
         parameters:
@@ -116,23 +112,10 @@ stages:
           service_defaults_repo: service_defaults
           
       - ${{ if eq(parameters.skip_deployment, false) }}:
-        - job: ManualApproval
-          displayName: "Manual Approval for Dev Deployment"
-          pool: server
-          steps:
-            - task: ManualValidation@0
-              timeoutInMinutes: 1440  #24 hours for manual approval
-              inputs:
-                instructions: 'Please approve deployment to dev environment'
-                onTimeout: 'reject'
-        - job: DeployToDev
-          dependsOn: ManualApproval
-          condition: succeeded()
-          steps:
-            - template: jobs/deploy.yaml@library
-              parameters:
-                install_aspire: true
-                service_defaults_repo: service_defaults
+        - template: jobs/deploy.yaml@library
+          parameters:
+            install_aspire: true
+            service_defaults_repo: service_defaults
 
   - stage: systemtest_auto
     variables: 
