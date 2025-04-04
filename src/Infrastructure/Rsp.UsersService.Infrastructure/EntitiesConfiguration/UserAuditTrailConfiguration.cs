@@ -1,11 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Rsp.UsersService.Domain.Entities;
 
 namespace Rsp.UsersService.Infrastructure.EntitiesConfiguration;
 
-[ExcludeFromCodeCoverage]
 public class UserAuditTrailConfiguration : IEntityTypeConfiguration<UserAuditTrail>
 {
     public void Configure(EntityTypeBuilder<UserAuditTrail> builder)

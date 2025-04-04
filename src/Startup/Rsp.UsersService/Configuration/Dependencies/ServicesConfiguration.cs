@@ -1,5 +1,7 @@
 ﻿using Rsp.UsersService.Application;
 using Rsp.UsersService.Application.Authentication.Helpers;
+using Rsp.UsersService.Infrastructure.Helpers;
+using Rsp.UsersService.Infrastructure.Interceptors;
 using Rsp.UsersService.Infrastructure.Repositories;
 
 namespace Rsp.UsersService.Configuration.Dependencies;
@@ -19,6 +21,10 @@ public static class ServicesConfiguration
 
         services.AddSingleton<ITokenHelper, TokenHelper>();
         services.AddTransient<IAuditTrailRepository, AuditTrailRepository>();
+        services.AddTransient<IAuditTrailHandler, IrasUserAuditTrailHandler>();
+        services.AddTransient<IAuditTrailHandler, UserRoleAuditTrailHandler>();
+        services.AddTransient<AuditTrailInterceptor>();
+        services.AddTransient<IAuditTrailDetailsService, AuditTrailDetailsService>();
 
         return services;
     }

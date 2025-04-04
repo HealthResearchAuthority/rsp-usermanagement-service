@@ -21,6 +21,7 @@ public static class AuthConfiguration
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/></param>
     /// <param name="appSettings">Application Settinghs</param>
+    /// <param name="config"><see cref="IConfiguration"/></param>
     public static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection services, AppSettings appSettings, IConfiguration config)
     {
         ConfigureJwt(services, appSettings, config);

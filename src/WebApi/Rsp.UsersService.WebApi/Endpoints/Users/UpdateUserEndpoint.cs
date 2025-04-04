@@ -1,20 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Rsp.UsersService.Application;
-using Rsp.UsersService.Application.Constants;
 using Rsp.UsersService.Domain.Entities;
-using Rsp.UsersService.WebApi.Helpers;
 using Rsp.UsersService.WebApi.Requests;
 using static Rsp.UsersService.WebApi.Helpers.ValidationProblemHelpers;
 
 namespace Rsp.UsersService.WebApi.Endpoints.Users;
 
-[ExcludeFromCodeCoverage]
 public static class UpdateUserEndpoint
 {
     // Validate the email address using DataAnnotations like the UserValidator does when RequireUniqueEmail = true.
@@ -27,8 +22,7 @@ public static class UpdateUserEndpoint
     (
         string email,
         [FromBody] UserRegisterRequest newUserDetails,
-        [FromServices] IServiceProvider sp,
-        HttpContext httpContext
+        [FromServices] IServiceProvider sp
     ) where TUser : IrasUser, new()
     {
         var userManager = sp.GetRequiredService<UserManager<TUser>>();
@@ -48,16 +42,6 @@ public static class UpdateUserEndpoint
             return TypedResults.NotFound($"{email} not found");
         }
 
-        // Create deep copy of user to retain values when user is changed
-        var oldUser = new TUser();
-        foreach (var prop in typeof(TUser).GetProperties())
-        {
-            if (prop.CanRead && prop.CanWrite)
-            {
-                prop.SetValue(oldUser, prop.GetValue(user));
-            }
-        }
-
         user.FirstName = newUserDetails.FirstName;
         user.LastName = newUserDetails.LastName;
         user.Title = newUserDetails.Title;
@@ -75,28 +59,6 @@ public static class UpdateUserEndpoint
         if (!result.Succeeded)
         {
             return CreateValidationProblem(result);
-        }
-
-        var sysAdmin = await UserHelper.FindUserAsync
-        (
-            userManager,
-            null,
-            UserHelper.GetAuthenticatedUserEmail(httpContext.User)!
-        );
-
-        if (sysAdmin != null)
-        {
-            var auditTrail = AuditTrailHelper.GenerateAuditTrail
-            (
-                user,
-                AuditTrailActions.Update,
-                sysAdmin!.Id,
-                oldUser
-            );
-
-            var auditRespository = sp.GetRequiredService<IAuditTrailRepository>();
-
-            await auditRespository.CreateAuditRecords(auditTrail);
         }
 
         return TypedResults.NoContent();

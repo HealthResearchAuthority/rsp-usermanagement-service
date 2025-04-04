@@ -1,8 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace Rsp.UsersService.WebApi.DTOs;
 
-namespace Rsp.UsersService.WebApi.DTOs;
-
-[ExcludeFromCodeCoverage]
 public class UserAuditTrailDto
 {
     public DateTime DateTimeStamp { get; set; }
