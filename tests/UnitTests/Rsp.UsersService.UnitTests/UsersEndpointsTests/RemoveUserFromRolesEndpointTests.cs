@@ -1,5 +1,4 @@
 ﻿using AutoFixture.Xunit2;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Moq;
@@ -25,13 +24,10 @@ public class RemoveUserFromRolesEndpointTests : TestServiceBase
             .Setup(sp => sp.GetService(typeof(UserManager<IrasUser>)))
             .Returns(userManager.Object);
 
-        var httpContext = new DefaultHttpContext();
-
         // Act
         var result = await RemoveUserFromRolesEndpoint.RemoveUserFromRoles<IrasUser>
         (
             Mocker.Get<IServiceProvider>(),
-            httpContext,
             email,
             roles
         );
@@ -68,13 +64,10 @@ public class RemoveUserFromRolesEndpointTests : TestServiceBase
             .Setup(sp => sp.GetService(typeof(UserManager<IrasUser>)))
             .Returns(userManager.Object);
 
-        var httpContext = new DefaultHttpContext();
-
         // Act
         var result = await RemoveUserFromRolesEndpoint.RemoveUserFromRoles<IrasUser>
         (
             Mocker.Get<IServiceProvider>(),
-            httpContext,
             email,
             roles
         );
@@ -105,13 +98,10 @@ public class RemoveUserFromRolesEndpointTests : TestServiceBase
             .Setup(sp => sp.GetService(typeof(UserManager<IrasUser>)))
             .Returns(userManager.Object);
 
-        var httpContext = new DefaultHttpContext();
-
         // Act
         var result = await RemoveUserFromRolesEndpoint.RemoveUserFromRoles<IrasUser>
         (
             Mocker.Get<IServiceProvider>(),
-            httpContext,
             email,
             roles
         );
@@ -146,13 +136,10 @@ public class RemoveUserFromRolesEndpointTests : TestServiceBase
             .GetMock<IServiceProvider>().Setup(sp => sp.GetService(typeof(UserManager<IrasUser>)))
             .Returns(userManager.Object);
 
-        var httpContext = new DefaultHttpContext();
-
         // Act
         var result = await RemoveUserFromRolesEndpoint.RemoveUserFromRoles<IrasUser>
         (
             Mocker.Get<IServiceProvider>(),
-            httpContext,
             email,
             roles
         );

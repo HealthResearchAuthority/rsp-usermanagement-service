@@ -1,8 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace Rsp.UsersService.Domain.Entities;
 
-namespace Rsp.UsersService.Domain.Entities;
-
-[ExcludeFromCodeCoverage]
 public class UserAuditTrail
 {
     public Guid Id { get; set; }

@@ -53,7 +53,7 @@ services
     .AddIdentityApiEndpoints<IrasUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<IrasIdentityDbContext>()
-    .AddUserStore<UserStore<IrasUser, IdentityRole, IrasIdentityDbContext>>();
+    .AddUserStore<UserStore<IrasUser, IdentityRole, IrasIdentityDbContext, string, IdentityUserClaim<string>, UserRole>>();
 
 services.Configure<IdentityOptions>(options =>
 {

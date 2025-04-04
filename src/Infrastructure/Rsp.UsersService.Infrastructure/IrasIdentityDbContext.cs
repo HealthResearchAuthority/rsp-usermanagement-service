@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Rsp.UsersService.Domain.Entities;
@@ -8,8 +7,18 @@ using Rsp.UsersService.Infrastructure.SeedData;
 
 namespace Rsp.UsersService.Infrastructure;
 
-[ExcludeFromCodeCoverage]
-public class IrasIdentityDbContext(DbContextOptions<IrasIdentityDbContext> options) : IdentityDbContext<IrasUser>(options)
+public class IrasIdentityDbContext(DbContextOptions<IrasIdentityDbContext> options) :
+    IdentityDbContext
+    <
+        IrasUser,
+        IdentityRole,
+        string,
+        IdentityUserClaim<string>,
+        UserRole,
+        IdentityUserLogin<string>,
+        IdentityRoleClaim<string>,
+        IdentityUserToken<string>
+    >(options)
 {
     public DbSet<UserAuditTrail> UserAuditTrails { get; set; }
 
@@ -44,7 +53,7 @@ public class IrasIdentityDbContext(DbContextOptions<IrasIdentityDbContext> optio
 
         builder.Entity<IdentityRoleClaim<string>>(b => b.ToTable("RoleClaims"));
 
-        builder.Entity<IdentityUserRole<string>>(b => b.ToTable("UserRoles"));
+        builder.Entity<UserRole>(b => b.ToTable("UserRoles"));
 
         builder.ApplyConfiguration(new UserAuditTrailConfiguration());
     }

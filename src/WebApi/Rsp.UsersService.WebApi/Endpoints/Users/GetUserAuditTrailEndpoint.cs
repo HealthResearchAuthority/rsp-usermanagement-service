@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +8,6 @@ using Rsp.UsersService.WebApi.Responses;
 
 namespace Rsp.UsersService.WebApi.Endpoints.Users;
 
-[ExcludeFromCodeCoverage]
 public static class GetUserAuditTrailEndpoint
 {
     public static async Task<Results<NotFound<string>, Ok<UserAuditTrailResponse>>> GetUserAuditTrail

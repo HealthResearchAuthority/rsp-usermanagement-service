@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Rsp.UsersService.Infrastructure;
+using Rsp.UsersService.Infrastructure.Interceptors;
 
 namespace Rsp.UsersService.Configuration.Database;
 
@@ -16,12 +17,12 @@ public static class DatabaseConfiguration
     /// <param name="configuration"><see cref="IConfiguration"/></param>
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<IrasIdentityDbContext>
-                (
-                    options => options
-                        .UseSqlServer(configuration.GetConnectionString("IdentityDbConnection"))
-                    .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning))
-                );
+        services.AddDbContext<IrasIdentityDbContext>((serviceProvider, options) =>
+            options
+                .UseSqlServer(configuration.GetConnectionString("IdentityDbConnection"))
+                .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning))
+                .AddInterceptors(serviceProvider.GetRequiredService<AuditTrailInterceptor>())
+        );
 
         return services;
     }

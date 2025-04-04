@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using Rsp.UsersService.Domain.Entities;
@@ -26,12 +25,9 @@ public class AddUserToRolesEndpointTests : TestServiceBase
             .Setup(x => x.GetService(typeof(UserManager<IrasUser>)))
             .Returns(userManager.Object);
 
-        var httpContext = new DefaultHttpContext();
-
         // Act
         var result = await AddUserToRolesEndpoint.AddUserToRoles<IrasUser>(
             Mocker.Get<IServiceProvider>(),
-            httpContext,
             email,
             roles
         );
@@ -43,7 +39,6 @@ public class AddUserToRolesEndpointTests : TestServiceBase
 
     [Theory]
     [ValidRolesData]
-    [ValidUserClaimsData]
     public async Task AddUserToRoles_ValidRequest_ReturnsNoContent
     (
         IrasUser user,
@@ -76,12 +71,9 @@ public class AddUserToRolesEndpointTests : TestServiceBase
             .Setup(x => x.GetService(typeof(UserManager<IrasUser>)))
             .Returns(userManager.Object);
 
-        var httpContext = new DefaultHttpContext();
-
         // Act
         var result = await AddUserToRolesEndpoint.AddUserToRoles<IrasUser>(
             Mocker.Get<IServiceProvider>(),
-            httpContext,
             user.Email!,
             roles
         );
@@ -125,13 +117,10 @@ public class AddUserToRolesEndpointTests : TestServiceBase
             .Setup(x => x.GetService(typeof(UserManager<IrasUser>)))
             .Returns(userManager.Object);
 
-        var httpContext = new DefaultHttpContext();
-
         // Act
         var result = await AddUserToRolesEndpoint.AddUserToRoles<IrasUser>
         (
             Mocker.Get<IServiceProvider>(),
-            httpContext,
             user.Email!,
             roles
         );
