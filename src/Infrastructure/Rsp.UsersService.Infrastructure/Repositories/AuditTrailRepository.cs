@@ -15,18 +15,4 @@ public class AuditTrailRepository(IrasIdentityDbContext context) : IAuditTrailRe
             .Where(at => at.UserId == userId)
             .ToListAsync();
     }
-
-    public async Task CreateAuditRecords(IEnumerable<UserAuditTrail> userAuditTrails)
-    {
-        await context.UserAuditTrails.AddRangeAsync(userAuditTrails);
-        await context.SaveChangesAsync();
-    }
-
-    public async Task<int> GetAuditTrailCount(string userId)
-    {
-        return await context
-            .UserAuditTrails
-            .Where(at => at.UserId == userId)
-            .CountAsync();
-    }
 }
