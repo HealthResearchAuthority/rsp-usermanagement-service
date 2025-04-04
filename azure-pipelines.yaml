@@ -38,7 +38,7 @@ parameters:
   - name: skip_deployment
     displayName: Skip Deployment
     type: boolean
-    default: false
+    default: true
   - name: browser
     displayName: Select a Browser
     type: string
@@ -97,10 +97,9 @@ resources:
       ref: ${{ parameters.servicedefaults_library_branch }}
 
 stages:
-  - stage: dev
-    variables: 
-    - group: 'DevelopmentEnvironment'
-    condition: eq('${{ parameters.env }}', 'dev') 
+  - stage: Build
+    displayName: "Build Stage"
+    condition: eq('${{ parameters.env }}', 'dev')  # Only build for dev environment
     jobs:
       - template: jobs/build.yaml@library
         parameters:
@@ -110,13 +109,17 @@ stages:
           run_sonarcloud_analysis: ${{ parameters.run_sonarcloud_analysis }}
           install_aspire: true
           service_defaults_repo: service_defaults
-
-      - ${{ if eq(parameters.skip_deployment, false) }}:
-        - template: jobs/deploy.yaml@library
-          parameters:
-            depends_on: 'Build'
-            install_aspire: true
-            service_defaults_repo: service_defaults
+          
+  - stage: dev
+    displayName: "Deploy to Development"
+    variables: 
+      - group: 'DevelopmentEnvironment'
+    condition: and(eq('${{ parameters.env }}', 'dev'), eq('${{ parameters.skip_deployment }}', 'false'))
+    jobs:
+      - template: jobs/deploy.yaml@library
+        parameters:
+          install_aspire: true
+          service_defaults_repo: service_defaults
 
   - stage: systemtest_auto
     variables: 
