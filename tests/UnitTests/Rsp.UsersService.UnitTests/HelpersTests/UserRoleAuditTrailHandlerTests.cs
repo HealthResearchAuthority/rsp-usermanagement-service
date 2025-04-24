@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Rsp.UsersService.Domain.Entities;
 using Rsp.UsersService.Infrastructure;
 using Rsp.UsersService.Infrastructure.Helpers;
+using Shouldly;
 
 namespace Rsp.UsersService.UnitTests.HelpersTests;
 
@@ -26,7 +27,7 @@ public class UserRoleAuditTrailHandlerTests
         var result = _handler.CanHandle(userRole);
 
         // Assert
-        Assert.True(result);
+        result.ShouldBeTrue();
     }
 
     [Fact]
@@ -39,7 +40,7 @@ public class UserRoleAuditTrailHandlerTests
         var result = _handler.CanHandle(nonUserRole);
 
         // Assert
-        Assert.False(result);
+        result.ShouldBeFalse();
     }
 
     [Fact]
@@ -55,7 +56,7 @@ public class UserRoleAuditTrailHandlerTests
         var result = await _handler.GenerateAuditTrails(entityEntry, systemAdmin);
 
         // Assert
-        Assert.Empty(result);
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -88,10 +89,11 @@ public class UserRoleAuditTrailHandlerTests
         var result = await _handler.GenerateAuditTrails(entityEntry, systemAdmin, contextMock);
 
         // Assert
-        var auditTrail = Assert.Single(result);
-        Assert.Equal("test@example.com was assigned admin role", auditTrail.Description);
-        Assert.Equal("user1", auditTrail.UserId);
-        Assert.Equal("admin1", auditTrail.SystemAdministratorId);
+        var auditTrail = result.Single();
+
+        auditTrail.Description.ShouldBe("test@example.com was assigned admin role");
+        auditTrail.UserId.ShouldBe("user1");
+        auditTrail.SystemAdministratorId.ShouldBe("admin1");
     }
 
     [Fact]
@@ -124,10 +126,11 @@ public class UserRoleAuditTrailHandlerTests
         var result = await _handler.GenerateAuditTrails(entityEntry, systemAdmin, contextMock);
 
         // Assert
-        var auditTrail = Assert.Single(result);
-        Assert.Equal("test@example.com was unassigned admin role", auditTrail.Description);
-        Assert.Equal("user1", auditTrail.UserId);
-        Assert.Equal("admin1", auditTrail.SystemAdministratorId);
+        var auditTrail = result.Single();
+
+        auditTrail.Description.ShouldBe("test@example.com was unassigned admin role");
+        auditTrail.UserId.ShouldBe("user1");
+        auditTrail.SystemAdministratorId.ShouldBe("admin1");
     }
 
     [Fact]
@@ -142,7 +145,7 @@ public class UserRoleAuditTrailHandlerTests
         var result = await _handler.GenerateAuditTrails(entityEntry, systemAdmin, null);
 
         // Assert
-        Assert.Empty(result);
+        result.ShouldBeEmpty();
     }
 
     private static EntityEntry CreateFakeEntityEntry(object entity, EntityState state = EntityState.Unchanged)
