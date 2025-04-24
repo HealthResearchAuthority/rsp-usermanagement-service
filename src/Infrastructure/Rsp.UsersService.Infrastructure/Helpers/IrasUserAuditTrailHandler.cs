@@ -61,8 +61,18 @@ public class IrasUserAuditTrailHandler : IAuditTrailHandler
                     }
                     else
                     {
+                        const string emptyValue = "(null)"; // business is yet to decide how to handle this case, using '(null)' for now
+                        var oldValue = property.OriginalValue ?? emptyValue;
+                        var newValue = property.CurrentValue ?? emptyValue;
+
+                        if (property.Metadata.Name == nameof(IrasUser.Country))
+                        {
+                            oldValue = property.OriginalValue?.ToString()?.Replace(",", ", ") ?? emptyValue;
+                            newValue = property.CurrentValue?.ToString()?.Replace(",", ", ") ?? emptyValue;
+                        }
+
                         updateAuditTrail.Description =
-                            $"{property.OriginalValue} was changed to {property.CurrentValue}";
+                            $"{oldValue} was changed to {newValue}";
                     }
 
                     auditTrailRecords.Add(updateAuditTrail);

@@ -25,7 +25,7 @@ public class UserRoleAuditTrailHandler : IAuditTrailHandler
                 var addAuditTrail = new UserAuditTrail()
                 {
                     DateTimeStamp = DateTime.UtcNow,
-                    Description = $"{user!.Email} was assigned {role!.NormalizedName} role",
+                    Description = $"{user!.Email} was assigned {role!.Name} role",
                     UserId = user!.Id,
                     SystemAdministratorId = systemAdmin.Id
                 };
@@ -37,7 +37,7 @@ public class UserRoleAuditTrailHandler : IAuditTrailHandler
                 var deleteAuditTrail = new UserAuditTrail()
                 {
                     DateTimeStamp = DateTime.UtcNow,
-                    Description = $"{user!.Email} was unassigned {role!.NormalizedName} role",
+                    Description = $"{user!.Email} was unassigned {role!.Name} role",
                     UserId = user!.Id,
                     SystemAdministratorId = systemAdmin.Id
                 };
