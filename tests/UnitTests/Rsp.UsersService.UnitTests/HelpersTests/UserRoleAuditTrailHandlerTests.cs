@@ -74,7 +74,12 @@ public class UserRoleAuditTrailHandlerTests
             Status = "active"
         };
 
-        var role = new IdentityRole { Id = "role1", NormalizedName = "ADMIN" };
+        var role = new IdentityRole
+        {
+            Id = "role1",
+            NormalizedName = "ADMIN",
+            Name = "admin"
+        };
 
         var contextMock = CreateFakeDbContext(user, role);
         var entityEntry = CreateFakeEntityEntry(userRole, EntityState.Added);
@@ -84,7 +89,7 @@ public class UserRoleAuditTrailHandlerTests
 
         // Assert
         var auditTrail = Assert.Single(result);
-        Assert.Equal("test@example.com was assigned ADMIN role", auditTrail.Description);
+        Assert.Equal("test@example.com was assigned admin role", auditTrail.Description);
         Assert.Equal("user1", auditTrail.UserId);
         Assert.Equal("admin1", auditTrail.SystemAdministratorId);
     }
@@ -105,7 +110,12 @@ public class UserRoleAuditTrailHandlerTests
             Status = "active"
         };
 
-        var role = new IdentityRole { Id = "role1", NormalizedName = "ADMIN" };
+        var role = new IdentityRole
+        {
+            Id = "role1",
+            NormalizedName = "ADMIN",
+            Name = "admin"
+        };
 
         var contextMock = CreateFakeDbContext(user, role);
         var entityEntry = CreateFakeEntityEntry(userRole, EntityState.Deleted);
@@ -115,7 +125,7 @@ public class UserRoleAuditTrailHandlerTests
 
         // Assert
         var auditTrail = Assert.Single(result);
-        Assert.Equal("test@example.com was unassigned ADMIN role", auditTrail.Description);
+        Assert.Equal("test@example.com was unassigned admin role", auditTrail.Description);
         Assert.Equal("user1", auditTrail.UserId);
         Assert.Equal("admin1", auditTrail.SystemAdministratorId);
     }
