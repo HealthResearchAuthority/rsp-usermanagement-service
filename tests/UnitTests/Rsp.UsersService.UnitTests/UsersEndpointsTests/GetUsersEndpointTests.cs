@@ -24,6 +24,11 @@ public class GetUsersEndpointTests : TestServiceBase
 
         var userIds = users.Select(x => x.Id).ToList();
 
+        foreach (var user in users)
+        {
+            user.LastName = "Smith-" + Guid.NewGuid().ToString();
+        }
+
         var userManager = Mocker.GetMock<UserManager<IrasUser>>();
 
         userManager
@@ -39,7 +44,7 @@ public class GetUsersEndpointTests : TestServiceBase
         (
             Mocker.Get<IServiceProvider>(),
             userIds,
-            null,
+            "Smith",
             pageIndex,
             pageSize
         );
