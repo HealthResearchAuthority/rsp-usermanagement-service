@@ -27,6 +27,11 @@ public static class SearchUsersEndpoint
             return CreateValidationProblem("Missing_Parameters", "Please provide a search query");
         }
 
+        if (pageIndex < 1 || pageSize < 1)
+        {
+            return CreateValidationProblem("Bad_Request", "PageIndex and PageSize should be greater than 0");
+        }
+
         userIdsToIgnore ??= new List<string>();
         var userManager = sp.GetRequiredService<UserManager<TUser>>();
 
