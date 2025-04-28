@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -67,21 +68,7 @@ public static class SearchUsersEndpoint
            {
                Users = users.Select
                (
-                   user => new UserDto
-                   (
-                       user.Id,
-                       user.FirstName,
-                       user.LastName,
-                       user.Email!,
-                       user.Title,
-                       user.JobTitle,
-                       user.Organisation,
-                       user.Telephone,
-                       user.Country,
-                       user.Status,
-                       user.LastLogin,
-                       user.LastUpdated
-                   )
+                   user => user.Adapt<UserDto>()
                ),
                TotalCount = userCount
            }
