@@ -50,7 +50,7 @@ public static class SearchUsersEndpoint
 
         if (users == null)
         {
-            return TypedResults.NotFound("Users not not found");
+            return TypedResults.NotFound("Users not found");
         }
 
         var userCount = await userManager

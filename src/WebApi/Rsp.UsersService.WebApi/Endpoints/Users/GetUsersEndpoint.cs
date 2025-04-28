@@ -51,7 +51,7 @@ public static class GetUsersEndpoint
 
         if (users == null)
         {
-            return TypedResults.NotFound("Users not not found");
+            return TypedResults.NotFound("Users not found");
         }
 
         var usersCount = await baseQuery.CountAsync();
