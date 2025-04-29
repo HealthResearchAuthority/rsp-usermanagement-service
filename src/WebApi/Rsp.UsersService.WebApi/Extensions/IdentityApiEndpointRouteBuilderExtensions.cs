@@ -25,10 +25,12 @@ using static Rsp.UsersService.WebApi.Endpoints.Users.GetAllUsersEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.GetUserAuditTrailEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.GetUserClaimsEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.GetUserEndpoint;
+using static Rsp.UsersService.WebApi.Endpoints.Users.GetUsersEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.GetUsersInRoleEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.RegisterUserEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.RemoveUserClaimsEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.RemoveUserFromRolesEndpoint;
+using static Rsp.UsersService.WebApi.Endpoints.Users.SearchUsersEndpoint;
 using static Rsp.UsersService.WebApi.Endpoints.Users.UpdateUserEndpoint;
 
 namespace Rsp.UsersService.WebApi.Extensions;
@@ -94,6 +96,28 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             })
             .WithName(nameof(GetUserByIdOrEmail))
             .WithMetadata(typeof(Endpoints.Users.GetUserEndpoint));
+
+        usersGroup
+            .MapPost(RoutePatterns.ByIds, GetUsersById<TUser>)
+            .WithDescription("Get users by ids")
+            .WithOpenApi(operation =>
+            {
+                operation.Summary = "Get users by ids";
+                return operation;
+            })
+            .WithName(nameof(GetUsersById))
+            .WithMetadata(typeof(Endpoints.Users.GetUsersEndpoint));
+
+        usersGroup
+            .MapPost(RoutePatterns.Search, SearchUsers<TUser>)
+            .WithDescription("Search users by their name or email")
+            .WithOpenApi(operation =>
+            {
+                operation.Summary = "Search users by their name or email";
+                return operation;
+            })
+            .WithName(nameof(SearchUsers))
+            .WithMetadata(typeof(Endpoints.Users.GetUsersEndpoint));
 
         usersGroup
             .MapGet(RoutePatterns.Role, GetUsersInRole<TUser>)
