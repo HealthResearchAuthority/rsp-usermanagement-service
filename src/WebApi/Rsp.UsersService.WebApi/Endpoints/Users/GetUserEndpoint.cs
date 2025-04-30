@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Rsp.UsersService.Application.Constants;
 using Rsp.UsersService.Domain.Entities;
 using Rsp.UsersService.WebApi.DTOs;
 using Rsp.UsersService.WebApi.Responses;
@@ -34,6 +35,9 @@ public static class GetUserEndpoint
 
         var roles = await userManager.GetRolesAsync(user);
 
+        var userClaims = await userManager.GetClaimsAsync(user);
+        var accessRequired = userClaims.Where(x => x.Type == UserClaimTypes.AccessRequired).Select(x => x.Value);
+
         return TypedResults.Ok(new UserResponse
         {
             User = new UserDto(user.Id,
@@ -48,7 +52,8 @@ public static class GetUserEndpoint
             user.Status,
             user.LastLogin,
             user.LastUpdated),
-            Roles = roles.AsEnumerable()
+            Roles = roles.AsEnumerable(),
+            AccessRequired = accessRequired.AsEnumerable(),
         });
     }
 }
