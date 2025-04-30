@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Moq;
+using Rsp.UsersService.Application.Constants;
 using Rsp.UsersService.Domain.Entities;
 using Rsp.UsersService.UnitTests.TestData;
 using Rsp.UsersService.WebApi.DTOs;
@@ -80,6 +82,13 @@ public class GetUserEndpointTests : TestServiceBase
         IrasUser user,
         List<string> roles)
     {
+        var userAccess = new List<Claim>
+        {
+            new Claim(UserClaimTypes.AccessRequired, "custom_value1"),
+            new Claim(UserClaimTypes.AccessRequired, "custom_value2"),
+            new Claim(UserClaimTypes.AccessRequired, "custom_value3")
+        };
+
         var userManagerMock = Mocker.GetMock<UserManager<IrasUser>>();
 
         userManagerMock
@@ -89,6 +98,10 @@ public class GetUserEndpointTests : TestServiceBase
         userManagerMock
             .Setup(x => x.GetRolesAsync(user))
             .ReturnsAsync(roles);
+
+        userManagerMock
+           .Setup(x => x.GetClaimsAsync(user))
+           .ReturnsAsync(userAccess);
 
         Mocker
             .GetMock<IServiceProvider>()
@@ -125,5 +138,6 @@ public class GetUserEndpointTests : TestServiceBase
             );
 
         okResult.Value.Roles.ShouldBe(roles, ignoreOrder: true);
+        okResult.Value.AccessRequired.ShouldBe(userAccess.Select(x => x.Value), ignoreOrder: true);
     }
 }
