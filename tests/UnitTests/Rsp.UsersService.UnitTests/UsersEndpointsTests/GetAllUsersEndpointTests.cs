@@ -28,6 +28,7 @@ public class GetAllUsersEndpointTests : TestServiceBase
         var result = await GetAllUsersEndpoint.GetAllUsers<IrasUser>
         (
             Mocker.Get<IServiceProvider>(),
+            null,
             pageIndex,
             pageSize
         );
@@ -60,6 +61,7 @@ public class GetAllUsersEndpointTests : TestServiceBase
         var result = await GetAllUsersEndpoint.GetAllUsers<IrasUser>
         (
             Mocker.Get<IServiceProvider>(),
+            null,
             pageIndex,
             pageSize
         );

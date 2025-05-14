@@ -2,11 +2,13 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.FeatureManagement;
 using Microsoft.Net.Http.Headers;
 using Rsp.Logging.Extensions;
 using Rsp.UsersService.Application.Authentication.Helpers;
 using Rsp.UsersService.Application.Settings;
+using Rsp.UsersService.Domain.Entities;
 
 namespace Rsp.UsersService.Configuration.Auth;
 
@@ -67,14 +69,25 @@ public static class AuthConfiguration
 
                 return Task.CompletedTask;
             },
-            OnTokenValidated = context =>
+            OnTokenValidated = async context =>
             {
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
 
-                logger.LogAsInformation("AuthToken Validated");
+                if (context.Principal != null && context.Principal.FindFirst(ClaimTypes.Email)?.Value != null)
+                {
+                    // take a record of Login date after user has been authenticated
+                    var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<IrasUser>>();
+                    var user = await userManager.FindByEmailAsync(context.Principal.FindFirst(ClaimTypes.Email)!.Value);
 
-                return Task.CompletedTask;
-            }
+                    if (user != null)
+                    {
+                        user.LastLogin = DateTime.UtcNow;
+                        await userManager.UpdateAsync(user);
+                    }
+                }
+
+                logger.LogAsInformation("AuthToken Validated");
+            },
         };
 
         var featureManager = new FeatureManager(new ConfigurationFeatureDefinitionProvider(config));
