@@ -52,6 +52,12 @@ public static class UpdateUserEndpoint
         user.LastUpdated = newUserDetails.LastUpdated;
         user.Status = newUserDetails.Status;
 
+        if (newUserDetails.CurrentLogin != null)
+        {
+            user.LastLogin = user.CurrentLogin;
+            user.CurrentLogin = newUserDetails.CurrentLogin;
+        }
+
         await userStore.SetUserNameAsync(user, newUserDetails.Email, CancellationToken.None);
         await emailStore.SetEmailAsync(user, newUserDetails.Email, CancellationToken.None);
         var result = await userManager.UpdateAsync(user);
