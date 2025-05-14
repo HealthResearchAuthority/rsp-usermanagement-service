@@ -35,12 +35,16 @@ public static class GetUsersEndpoint
                 .Where(x => ids.Contains(x.Id));
         if (!string.IsNullOrEmpty(searchQuery))
         {
+            var splitQuery = searchQuery.Split(' ');
+
             // apply search term if available
             baseQuery = baseQuery.
                 Where(x =>
-                    x.FirstName.Contains(searchQuery)
-                    || x.LastName.Contains(searchQuery)
-                    || x.Email!.Contains(searchQuery));
+                        splitQuery.Any(word =>
+                        x.FirstName.Contains(word)
+                    || x.LastName.Contains(word)
+                    || x.Email!.Contains(word)
+                 ));
         }
 
         var users = await baseQuery

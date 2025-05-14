@@ -11,6 +11,6 @@ public class AuditTrailDetailsService(IHttpContextAccessor contextAccessor) : IA
     {
         var claimsPrinciple = contextAccessor?.HttpContext?.User;
 
-        return claimsPrinciple!.Claims!.FirstOrDefault(x => x.Type == ClaimTypes.Email)!.Value!;
+        return claimsPrinciple!.Claims!.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value!;
     }
 }

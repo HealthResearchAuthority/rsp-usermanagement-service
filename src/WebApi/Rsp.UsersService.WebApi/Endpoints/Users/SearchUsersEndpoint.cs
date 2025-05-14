@@ -36,13 +36,17 @@ public static class SearchUsersEndpoint
         userIdsToIgnore ??= new List<string>();
         var userManager = sp.GetRequiredService<UserManager<TUser>>();
 
+        var splitQuery = searchQuery.Split(' ');
+
         var users = await userManager
                 .Users
                 .Where(u => !userIdsToIgnore.Contains(u.Id))
                 .Where(x =>
-                    x.FirstName.Contains(searchQuery)
-                    || x.LastName.Contains(searchQuery)
-                    || x.Email!.Contains(searchQuery))
+                    splitQuery.Any(w =>
+                        x.FirstName.Contains(w)
+                        || x.LastName.Contains(w)
+                        || x.Email!.Contains(w)
+                        ))
                 .OrderBy(x => x.FirstName)
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)

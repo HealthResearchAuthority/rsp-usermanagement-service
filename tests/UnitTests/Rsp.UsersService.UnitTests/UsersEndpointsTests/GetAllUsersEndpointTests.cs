@@ -13,10 +13,10 @@ namespace Rsp.UsersService.UnitTests.UsersEndpointsTests;
 public class GetAllUsersEndpointTests : TestServiceBase
 {
     [Theory]
-    [InlineData(0, 5)]
-    [InlineData(5, 0)]
-    [InlineData(-1, 10)]
-    public async Task GetAllUsers_InvalidPageParameters_ReturnsBadRequest(int pageIndex, int pageSize)
+    [InlineData("testQuery", 0, 5)]
+    [InlineData("testQuery", 5, 0)]
+    [InlineData(null, -1, 10)]
+    public async Task GetAllUsers_InvalidPageParameters_ReturnsBadRequest(string? searchQuery, int pageIndex, int pageSize)
     {
         var userManager = Mocker.GetMock<UserManager<IrasUser>>();
 
@@ -28,6 +28,7 @@ public class GetAllUsersEndpointTests : TestServiceBase
         var result = await GetAllUsersEndpoint.GetAllUsers<IrasUser>
         (
             Mocker.Get<IServiceProvider>(),
+            searchQuery,
             pageIndex,
             pageSize
         );
@@ -43,6 +44,11 @@ public class GetAllUsersEndpointTests : TestServiceBase
         int pageSize,
         List<IrasUser> users)
     {
+        foreach (var user in users)
+        {
+            user.FirstName = user.FirstName + " testQuery";
+        }
+
         pageIndex = Math.Abs(pageIndex) + 1;
         pageSize = Math.Abs(pageSize) + 1;
 
@@ -60,6 +66,7 @@ public class GetAllUsersEndpointTests : TestServiceBase
         var result = await GetAllUsersEndpoint.GetAllUsers<IrasUser>
         (
             Mocker.Get<IServiceProvider>(),
+            "testQuery",
             pageIndex,
             pageSize
         );

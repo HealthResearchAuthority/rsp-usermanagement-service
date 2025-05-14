@@ -15,6 +15,7 @@ public static class GetAllUsersEndpoint
     public static async Task<Results<BadRequest<string>, Ok<AllUsersResponse>>> GetAllUsers<TUser>
     (
         [FromServices] IServiceProvider sp,
+        string? searchQuery = null,
         int pageIndex = 1,
         int pageSize = 10
     ) where TUser : IrasUser, new()
@@ -26,8 +27,25 @@ public static class GetAllUsersEndpoint
 
         var userManager = sp.GetRequiredService<UserManager<TUser>>();
 
-        var users = await userManager
-            .Users
+        var baseQuery = userManager.Users;
+
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            var splitQuery = searchQuery.Split(' ');
+
+            // apply search term if available
+            baseQuery = baseQuery.
+                Where(x =>
+                        splitQuery.Any(word =>
+                        x.FirstName.Contains(word)
+                    || x.LastName.Contains(word)
+                    || x.Email!.Contains(word)
+                 ));
+        }
+
+        var usersCount = await baseQuery.CountAsync();
+
+        var users = await baseQuery
             .OrderBy(u => u.FirstName)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
@@ -55,7 +73,7 @@ public static class GetAllUsersEndpoint
                         user.LastUpdated
                     )
                 ),
-                TotalCount = await userManager.Users.CountAsync()
+                TotalCount = usersCount
             }
         );
     }
