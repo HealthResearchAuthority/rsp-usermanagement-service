@@ -26,4 +26,5 @@ public class UserRegisterRequest
     public string? Role { get; set; } = null;
     public string Status { get; set; } = null!;
     public DateTime? LastUpdated { get; set; } = null;
+    public DateTime? CurrentLogin { get; set; } = null;
 }

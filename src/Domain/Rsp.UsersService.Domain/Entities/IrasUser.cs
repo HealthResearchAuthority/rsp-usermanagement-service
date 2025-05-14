@@ -35,4 +35,5 @@ public class IrasUser : IdentityUser, IAuditable
 
     public DateTime? LastUpdated { get; set; } = null;
     public DateTime? LastLogin { get; set; } = null;
+    public DateTime? CurrentLogin { get; set; } = null;
 }
