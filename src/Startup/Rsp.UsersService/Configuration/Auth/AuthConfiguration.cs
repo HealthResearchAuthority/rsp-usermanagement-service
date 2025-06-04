@@ -95,7 +95,7 @@ public static class AuthConfiguration
             .RequireAuthenticatedUser()
             .RequireClaim(ClaimTypes.Email)
             .RequireClaim(ClaimTypes.Role)
-            .RequireRole("admin", "iras_portal_user")
+            .RequireRole("system_administrator", "iras_portal_user")
             .Build();
 
         // set the default policy for [Authorize] attribute
