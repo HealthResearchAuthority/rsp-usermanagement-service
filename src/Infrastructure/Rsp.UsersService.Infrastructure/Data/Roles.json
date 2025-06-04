@@ -1,32 +1,26 @@
 [
-    {
-        "Id": "0755c2be-f404-44ed-bd78-93dca3b837a2",
-        "ConcurrencyStamp": "36ec8b0b-bf1b-4151-8978-e058ccf9d08c",
-        "Name": "question_set_admin",
-        "NormalizedName": "QUESTION_SET_ADMIN"
-    },
-    {
-        "Id": "c40073a2-8c05-41f9-a2e1-ce376b585b61",
-        "ConcurrencyStamp": "ad0bbca0-4d40-418d-8061-2904a29c2e4b",
-        "Name": "reviewer",
-        "NormalizedName": "REVIEWER"
-    },
-    {
-        "Id": "d0c76beb-b25f-4d1d-8be8-2bdf5a3a4c92",
-        "ConcurrencyStamp": "8c403e3f-540b-4ab1-ac5a-e0bc3fc65f6e",
-        "Name": "user",
-        "NormalizedName": "USER"
-    },
-    {
-        "Id": "ddac109a-e4ad-4572-a175-7795f81ec0e7",
-        "ConcurrencyStamp": "019438de-9097-43c4-90e1-241e60224fa4",
-        "Name": "admin",
-        "NormalizedName": "ADMIN"
-    },
-    {
-        "Id": "b008864d-5781-47ee-9aa9-e204155198a3",
-        "ConcurrencyStamp": "133fb613-7a85-44f9-b461-d506cfabc2a2",
-        "Name": "operations",
-        "NormalizedName": "OPERATIONS"
-    }
+  {
+    "Id": "c40073a2-8c05-41f9-a2e1-ce376b585b61",
+    "ConcurrencyStamp": "ad0bbca0-4d40-418d-8061-2904a29c2e4b",
+    "Name": "reviewer",
+    "NormalizedName": "REVIEWER"
+  },
+  {
+    "Id": "d0c76beb-b25f-4d1d-8be8-2bdf5a3a4c92",
+    "ConcurrencyStamp": "8c403e3f-540b-4ab1-ac5a-e0bc3fc65f6e",
+    "Name": "user",
+    "NormalizedName": "USER"
+  },
+  {
+    "Id": "ddac109a-e4ad-4572-a175-7795f81ec0e7",
+    "ConcurrencyStamp": "019438de-9097-43c4-90e1-241e60224fa4",
+    "Name": "system_administrator",
+    "NormalizedName": "SYSTEM_ADMINISTRATOR"
+  },
+  {
+    "Id": "b008864d-5781-47ee-9aa9-e204155198a3",
+    "ConcurrencyStamp": "133fb613-7a85-44f9-b461-d506cfabc2a2",
+    "Name": "operations",
+    "NormalizedName": "OPERATIONS"
+  }
 ]

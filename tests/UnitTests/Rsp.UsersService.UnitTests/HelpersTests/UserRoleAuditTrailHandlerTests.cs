@@ -78,8 +78,8 @@ public class UserRoleAuditTrailHandlerTests
         var role = new IdentityRole
         {
             Id = "role1",
-            NormalizedName = "ADMIN",
-            Name = "admin"
+            NormalizedName = "SYSTEM_ADMINISTRATOR",
+            Name = "system_administrator"
         };
 
         var contextMock = CreateFakeDbContext(user, role);
@@ -91,7 +91,7 @@ public class UserRoleAuditTrailHandlerTests
         // Assert
         var auditTrail = result.Single();
 
-        auditTrail.Description.ShouldBe("test@example.com was assigned admin role");
+        auditTrail.Description.ShouldBe("test@example.com was assigned system_administrator role");
         auditTrail.UserId.ShouldBe("user1");
         auditTrail.SystemAdministratorId.ShouldBe("admin1");
     }
@@ -115,8 +115,8 @@ public class UserRoleAuditTrailHandlerTests
         var role = new IdentityRole
         {
             Id = "role1",
-            NormalizedName = "ADMIN",
-            Name = "admin"
+            NormalizedName = "SYSTEM_ADMINISTRATOR",
+            Name = "system_administrator"
         };
 
         var contextMock = CreateFakeDbContext(user, role);
@@ -128,7 +128,7 @@ public class UserRoleAuditTrailHandlerTests
         // Assert
         var auditTrail = result.Single();
 
-        auditTrail.Description.ShouldBe("test@example.com was unassigned admin role");
+        auditTrail.Description.ShouldBe("test@example.com was unassigned system_administrator role");
         auditTrail.UserId.ShouldBe("user1");
         auditTrail.SystemAdministratorId.ShouldBe("admin1");
     }
