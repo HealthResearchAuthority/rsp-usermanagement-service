@@ -40,7 +40,7 @@ public static class GetUsersEndpoint
             // apply search term if available
             baseQuery = baseQuery.
                 Where(x =>
-                        splitQuery.Any(word =>
+                        splitQuery.All(word =>
                         x.FirstName.Contains(word)
                     || x.LastName.Contains(word)
                     || x.Email!.Contains(word)
