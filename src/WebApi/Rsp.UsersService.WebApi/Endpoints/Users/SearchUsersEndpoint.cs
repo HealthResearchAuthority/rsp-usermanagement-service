@@ -42,7 +42,7 @@ public static class SearchUsersEndpoint
                 .Users
                 .Where(u => !userIdsToIgnore.Contains(u.Id))
                 .Where(x =>
-                    splitQuery.Any(w =>
+                    splitQuery.All(w =>
                         x.FirstName.Contains(w)
                         || x.LastName.Contains(w)
                         || x.Email!.Contains(w)
