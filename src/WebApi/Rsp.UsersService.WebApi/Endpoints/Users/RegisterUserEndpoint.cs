@@ -45,8 +45,8 @@ public static class RegisterUserEndpoint
 
         var user = new TUser
         {
-            FirstName = registration.FirstName,
-            LastName = registration.LastName,
+            GivenName = registration.GivenName,
+            FamilyName = registration.FamilyName,
             Telephone = registration.Telephone,
             Country = registration.Country,
             Title = registration.Title,

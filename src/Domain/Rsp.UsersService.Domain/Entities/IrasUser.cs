@@ -10,10 +10,10 @@ public class IrasUser : IdentityUser, IAuditable
     public string? Title { get; set; } = null!;
 
     [Auditable]
-    public string FirstName { get; set; } = null!;
+    public string GivenName { get; set; } = null!;
 
     [Auditable]
-    public string LastName { get; set; } = null!;
+    public string FamilyName { get; set; } = null!;
 
     [Auditable]
     public override string? Email { get; set; }

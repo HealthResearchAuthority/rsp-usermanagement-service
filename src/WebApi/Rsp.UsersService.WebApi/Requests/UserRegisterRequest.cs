@@ -5,14 +5,14 @@ public class UserRegisterRequest
     public string Title { get; set; } = null!;
 
     /// <summary>
-    /// The user's first name.
+    /// The user's given name.
     /// </summary>
-    public string FirstName { get; set; } = null!;
+    public string GivenName { get; set; } = null!;
 
     /// <summary>
-    /// The user's last name.
+    /// The user's family name.
     /// </summary>
-    public string LastName { get; set; } = null!;
+    public string FamilyName { get; set; } = null!;
 
     /// <summary>
     /// The user's email address which acts as a user name.
