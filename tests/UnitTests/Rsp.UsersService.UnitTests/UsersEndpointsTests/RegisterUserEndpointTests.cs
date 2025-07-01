@@ -19,8 +19,8 @@ public class RegisterUserEndpointTests : TestServiceBase
         var registration = new UserRegisterRequest
         {
             Email = email,
-            FirstName = "Test",
-            LastName = "User"
+            GivenName = "Test",
+            FamilyName = "User"
         };
 
         var describer = new Mock<IdentityErrorDescriber>();

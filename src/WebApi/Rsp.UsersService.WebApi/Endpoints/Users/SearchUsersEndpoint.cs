@@ -43,11 +43,11 @@ public static class SearchUsersEndpoint
                 .Where(u => !userIdsToIgnore.Contains(u.Id))
                 .Where(x =>
                     splitQuery.All(w =>
-                        x.FirstName.Contains(w)
-                        || x.LastName.Contains(w)
+                        x.GivenName.Contains(w)
+                        || x.FamilyName.Contains(w)
                         || x.Email!.Contains(w)
                         ))
-                .OrderBy(x => x.FirstName)
+                .OrderBy(x => x.GivenName)
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -61,8 +61,8 @@ public static class SearchUsersEndpoint
                 .Users
                 .Where(u => !userIdsToIgnore.Contains(u.Id))
                 .Where(x =>
-                    x.FirstName.Contains(searchQuery)
-                    || x.LastName.Contains(searchQuery)
+                    x.GivenName.Contains(searchQuery)
+                    || x.FamilyName.Contains(searchQuery)
                     || x.Email!.Contains(searchQuery))
                 .CountAsync();
 

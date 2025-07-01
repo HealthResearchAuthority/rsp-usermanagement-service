@@ -46,7 +46,7 @@ public class GetAllUsersEndpointTests : TestServiceBase
     {
         foreach (var user in users)
         {
-            user.FirstName = user.FirstName + " testQuery";
+            user.GivenName = user.GivenName + " testQuery";
         }
 
         pageIndex = Math.Abs(pageIndex) + 1;
@@ -79,7 +79,7 @@ public class GetAllUsersEndpointTests : TestServiceBase
         var expectedUsers = users
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
-            .Select(u => new UserDto(u.Id, u.FirstName, u.LastName, u.Email!, u.Title, u.JobTitle, u.Organisation, u.Telephone, u.Country, u.Status, u.LastUpdated, u.LastUpdated));
+            .Select(u => new UserDto(u.Id, u.GivenName, u.FamilyName, u.Email!, u.Title, u.JobTitle, u.Organisation, u.Telephone, u.Country, u.Status, u.LastUpdated, u.LastUpdated));
 
         okResult.Value.Users.ShouldBe(expectedUsers, ignoreOrder: true);
     }

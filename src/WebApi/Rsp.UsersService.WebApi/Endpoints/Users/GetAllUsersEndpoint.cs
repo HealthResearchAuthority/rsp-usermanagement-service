@@ -37,8 +37,8 @@ public static class GetAllUsersEndpoint
             baseQuery = baseQuery.
                 Where(x =>
                         splitQuery.All(word =>
-                        x.FirstName.Contains(word)
-                    || x.LastName.Contains(word)
+                        x.GivenName.Contains(word)
+                    || x.FamilyName.Contains(word)
                     || x.Email!.Contains(word)
                  ));
         }
@@ -46,7 +46,7 @@ public static class GetAllUsersEndpoint
         var usersCount = await baseQuery.CountAsync();
 
         var users = await baseQuery
-            .OrderBy(u => u.FirstName)
+            .OrderBy(u => u.GivenName)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -60,8 +60,8 @@ public static class GetAllUsersEndpoint
                     user => new UserDto
                     (
                         user.Id,
-                        user.FirstName,
-                        user.LastName,
+                        user.GivenName,
+                        user.FamilyName,
                         user.Email!,
                         user.Title,
                         user.JobTitle,

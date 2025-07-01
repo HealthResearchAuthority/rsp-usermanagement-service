@@ -34,8 +34,8 @@ public static class GetUsersInRoleEndpoint
                      user => new UserDto
                      (
                         user.Id,
-                        user.FirstName,
-                        user.LastName,
+                        user.GivenName,
+                        user.FamilyName,
                         user.Email!,
                         user.Title,
                         user.JobTitle,
