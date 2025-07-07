@@ -1,8 +1,8 @@
 ﻿namespace Rsp.UsersService.WebApi.DTOs;
 
 public record UserDto(string Id,
-    string FirstName,
-    string LastName,
+    string GivenName,
+    string FamilyName,
     string Email,
     string? Title,
     string? JobTitle,

@@ -1,10 +1,10 @@
 name: $(Build.DefinitionName)_$(Build.SourceBranchName)_$(date:yyyyMMdd)$(rev:.r)
 
 pool:
-  name: "rsp-managed-devops-pool"
+  name: "rsp-manageddevopspool"
 
-#trigger:
-  #- main
+trigger:
+  - main
 
 parameters:
   - name: env

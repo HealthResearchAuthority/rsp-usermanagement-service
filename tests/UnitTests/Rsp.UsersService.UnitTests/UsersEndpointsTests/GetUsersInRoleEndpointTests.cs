@@ -72,8 +72,8 @@ public class GetUsersInRoleEndpointTests : TestServiceBase
         response
             .Value.ShouldNotBeNull()
             .Users.ShouldBeEquivalentTo(users.Select(user => new UserDto(user.Id,
-                    user.FirstName,
-                    user.LastName,
+                    user.GivenName,
+                    user.FamilyName,
                     user.Email!,
                     user.Title,
                     user.JobTitle,

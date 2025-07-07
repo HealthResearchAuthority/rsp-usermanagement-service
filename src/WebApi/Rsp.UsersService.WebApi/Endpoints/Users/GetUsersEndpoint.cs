@@ -41,14 +41,14 @@ public static class GetUsersEndpoint
             baseQuery = baseQuery.
                 Where(x =>
                         splitQuery.All(word =>
-                        x.FirstName.Contains(word)
-                    || x.LastName.Contains(word)
+                        x.GivenName.Contains(word)
+                    || x.FamilyName.Contains(word)
                     || x.Email!.Contains(word)
                  ));
         }
 
         var users = await baseQuery
-                .OrderBy(x => x.FirstName)
+                .OrderBy(x => x.GivenName)
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

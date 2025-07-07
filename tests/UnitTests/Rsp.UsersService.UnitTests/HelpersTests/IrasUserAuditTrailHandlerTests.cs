@@ -100,8 +100,8 @@ public class IrasUserAuditTrailHandlerTests
     public async Task GenerateAuditTrails_ShouldGenerateAuditTrailForModifiedProperty()
     {
         // Arrange
-        var irasUser = new IrasUser { Id = "user1", Email = "test@example.com", FirstName = "old first" };
-        var modifiedIrasUser = new IrasUser { Id = "user1", Email = "test@example.com", FirstName = "new first" };
+        var irasUser = new IrasUser { Id = "user1", Email = "test@example.com", GivenName = "old first" };
+        var modifiedIrasUser = new IrasUser { Id = "user1", Email = "test@example.com", GivenName = "new first" };
         var systemAdmin = new IrasUser { Id = "admin1" };
 
         var entityEntry = MockEntityEntry(irasUser, modifiedIrasUser);

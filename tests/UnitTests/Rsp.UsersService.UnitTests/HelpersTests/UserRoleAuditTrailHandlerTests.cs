@@ -70,8 +70,8 @@ public class UserRoleAuditTrailHandlerTests
         {
             Id = "user1",
             Email = "test@example.com",
-            FirstName = "first",
-            LastName = "last",
+            GivenName = "first",
+            FamilyName = "last",
             Status = "active"
         };
 
@@ -107,8 +107,8 @@ public class UserRoleAuditTrailHandlerTests
         {
             Id = "user1",
             Email = "test@example.com",
-            FirstName = "first",
-            LastName = "last",
+            GivenName = "first",
+            FamilyName = "last",
             Status = "active"
         };
 

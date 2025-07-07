@@ -29,7 +29,7 @@ public static class GetUserAuditTrailEndpoint
         (
            new UserAuditTrailResponse
            {
-               Name = $"{userAuditTrail.First().User.FirstName} {userAuditTrail.First().User.LastName}",
+               Name = $"{userAuditTrail.First().User.GivenName} {userAuditTrail.First().User.FamilyName}",
                Items = [.. userAuditTrail.Select
                (
                    at => new UserAuditTrailDto {

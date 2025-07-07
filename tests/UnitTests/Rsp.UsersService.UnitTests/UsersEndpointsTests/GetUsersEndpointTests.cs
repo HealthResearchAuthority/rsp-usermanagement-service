@@ -26,7 +26,7 @@ public class GetUsersEndpointTests : TestServiceBase
 
         foreach (var user in users)
         {
-            user.LastName = "Smith-" + Guid.NewGuid().ToString();
+            user.FamilyName = "Smith-" + Guid.NewGuid().ToString();
         }
 
         var userManager = Mocker.GetMock<UserManager<IrasUser>>();
@@ -57,7 +57,7 @@ public class GetUsersEndpointTests : TestServiceBase
         var expectedUsers = users
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
-            .Select(u => new UserDto(u.Id, u.FirstName, u.LastName, u.Email!, u.Title, u.JobTitle, u.Organisation, u.Telephone, u.Country, u.Status, u.LastUpdated, u.LastUpdated));
+            .Select(u => new UserDto(u.Id, u.GivenName, u.FamilyName, u.Email!, u.Title, u.JobTitle, u.Organisation, u.Telephone, u.Country, u.Status, u.LastUpdated, u.LastUpdated));
 
         okResult.Value.Users.ShouldBe(expectedUsers, ignoreOrder: true);
     }

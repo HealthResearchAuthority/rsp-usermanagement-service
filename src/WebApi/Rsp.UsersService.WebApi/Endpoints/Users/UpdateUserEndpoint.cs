@@ -42,8 +42,8 @@ public static class UpdateUserEndpoint
             return TypedResults.NotFound($"{email} not found");
         }
 
-        user.FirstName = newUserDetails.FirstName;
-        user.LastName = newUserDetails.LastName;
+        user.GivenName = newUserDetails.GivenName;
+        user.FamilyName = newUserDetails.FamilyName;
         user.Title = newUserDetails.Title;
         user.Telephone = newUserDetails.Telephone;
         user.Organisation = newUserDetails.Organisation;

@@ -19,8 +19,8 @@ public class ValidUserDataAttribute : AutoDataAttribute
         (
             c => c
                 .With(u => u.Id, fixture.Create<string>())
-                .With(u => u.FirstName, fixture.Create<string>())
-                .With(u => u.LastName, fixture.Create<string>())
+                .With(u => u.GivenName, fixture.Create<string>())
+                .With(u => u.FamilyName, fixture.Create<string>())
                 .With(u => u.Email, fixture.Create<string>())
         );
 
