@@ -44,6 +44,7 @@ public static class GetUsersInRoleEndpoint
                         user.Country,
                         user.Status,
                         user.LastLogin,
+                        user.CurrentLogin,
                         user.LastUpdated
                      )
                  ),

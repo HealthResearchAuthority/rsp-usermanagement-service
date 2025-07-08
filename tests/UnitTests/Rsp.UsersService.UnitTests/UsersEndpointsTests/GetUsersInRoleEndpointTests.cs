@@ -82,6 +82,7 @@ public class GetUsersInRoleEndpointTests : TestServiceBase
                     user.Country,
                     user.Status,
                     user.LastLogin,
+                    user.CurrentLogin,
                     user.LastUpdated)));
 
         response.Value.TotalCount.ShouldBe(users.Count);

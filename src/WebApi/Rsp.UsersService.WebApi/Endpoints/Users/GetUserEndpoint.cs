@@ -51,6 +51,7 @@ public static class GetUserEndpoint
             user.Country,
             user.Status,
             user.LastLogin,
+            user.CurrentLogin,
             user.LastUpdated),
             Roles = roles.AsEnumerable(),
             AccessRequired = accessRequired.AsEnumerable(),

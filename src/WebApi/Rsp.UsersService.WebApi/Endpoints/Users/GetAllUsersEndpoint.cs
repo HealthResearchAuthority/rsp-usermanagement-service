@@ -70,6 +70,7 @@ public static class GetAllUsersEndpoint
                         user.Country,
                         user.Status,
                         user.LastLogin,
+                        user.CurrentLogin,
                         user.LastUpdated
                     )
                 ),
