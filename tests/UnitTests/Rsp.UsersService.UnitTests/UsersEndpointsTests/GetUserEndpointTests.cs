@@ -133,6 +133,7 @@ public class GetUserEndpointTests : TestServiceBase
                     user.Country,
                     user.Status,
                     user.LastLogin,
+                    user.CurrentLogin,
                     user.LastUpdated
                 )
             );
