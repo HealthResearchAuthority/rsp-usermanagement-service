@@ -11,4 +11,5 @@ public record UserDto(string Id,
     string? Country,
     string? Status,
     DateTime? LastLogin,
+    DateTime? CurrentLogin,
     DateTime? LastUpdated);
