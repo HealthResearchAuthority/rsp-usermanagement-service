@@ -25,7 +25,7 @@ public class UserRoleAuditTrailHandler : IAuditTrailHandler
                 var addAuditTrail = new UserAuditTrail()
                 {
                     DateTimeStamp = DateTime.UtcNow,
-                    Description = $"{user!.Email} was assigned {role!.Name} role",
+                    Description = $"{user!.Email} was assigned {role!.Name!.Replace('_', ' ')} role",
                     UserId = user!.Id,
                     SystemAdministratorId = systemAdmin.Id
                 };

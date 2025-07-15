@@ -91,7 +91,7 @@ public class UserRoleAuditTrailHandlerTests
         // Assert
         var auditTrail = result.Single();
 
-        auditTrail.Description.ShouldBe("test@example.com was assigned system_administrator role");
+        auditTrail.Description.ShouldBe("test@example.com was assigned system administrator role");
         auditTrail.UserId.ShouldBe("user1");
         auditTrail.SystemAdministratorId.ShouldBe("admin1");
     }
