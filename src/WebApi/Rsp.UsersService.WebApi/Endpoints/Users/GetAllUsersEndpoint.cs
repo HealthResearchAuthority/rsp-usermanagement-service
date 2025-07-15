@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rsp.UsersService.Domain.Entities;
 using Rsp.UsersService.WebApi.DTOs;
+using Rsp.UsersService.WebApi.Requests;
 using Rsp.UsersService.WebApi.Responses;
 
 namespace Rsp.UsersService.WebApi.Endpoints.Users;
@@ -15,7 +16,7 @@ public static class GetAllUsersEndpoint
     public static async Task<Results<BadRequest<string>, Ok<AllUsersResponse>>> GetAllUsers<TUser>
     (
         [FromServices] IServiceProvider sp,
-        string? searchQuery = null,
+        [FromBody] SearchUserRequest? searchQuery = null,
         int pageIndex = 1,
         int pageSize = 10
     ) where TUser : IrasUser, new()
@@ -29,27 +30,69 @@ public static class GetAllUsersEndpoint
 
         var baseQuery = userManager.Users;
 
-        if (!string.IsNullOrEmpty(searchQuery))
+        if (searchQuery != null)
         {
-            var splitQuery = searchQuery.Split(' ');
+            if (!string.IsNullOrEmpty(searchQuery.SearchQuery))
+            {
+                var splitQuery = searchQuery.SearchQuery.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-            // apply search term if available
-            baseQuery = baseQuery.
-                Where(x =>
-                        splitQuery.All(word =>
-                        x.GivenName.Contains(word)
-                    || x.FamilyName.Contains(word)
-                    || x.Email!.Contains(word)
-                 ));
+                baseQuery = baseQuery.Where(x =>
+                    splitQuery.Any(word =>
+                        x.GivenName.ToLower().Contains(word.ToLower()) ||
+                        x.FamilyName.ToLower().Contains(word.ToLower()) ||
+                        (x.Email != null && x.Email.ToLower().Contains(word.ToLower()))
+                    ));
+            }
+
+            if (searchQuery.Status.HasValue)
+            {
+                var statusText = searchQuery.Status.Value ? "Active" : "Disabled";
+                baseQuery = baseQuery.Where(x => x.Status == statusText);
+            }
+
+            if (searchQuery.FromDate.HasValue)
+            {
+                baseQuery = baseQuery.Where(x => x.LastLogin >= searchQuery.FromDate.Value);
+            }
+
+            if (searchQuery.ToDate.HasValue)
+            {
+                baseQuery = baseQuery.Where(x => x.LastLogin <= searchQuery.ToDate.Value);
+            }
         }
 
-        var usersCount = await baseQuery.CountAsync();
-
-        var users = await baseQuery
+        // Materialize from database (only EF-safe filters applied so far)
+        var usersList = await baseQuery
             .OrderBy(u => u.GivenName)
+            .ToListAsync();
+
+        // ✅ Now filter by Country in memory
+        if (searchQuery?.Country is { Count: > 0 })
+        {
+            var lowerCountries = searchQuery.Country
+                .Where(c => !string.IsNullOrWhiteSpace(c))
+                .Select(c => c.ToLowerInvariant())
+                .ToList();
+
+            usersList = usersList
+                .Where(x =>
+                    !string.IsNullOrWhiteSpace(x.Country) &&
+                    x.Country
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(c => c.Trim().ToLowerInvariant())
+                        .Intersect(lowerCountries)
+                        .Any())
+                .ToList();
+        }
+
+        // ✅ Now paginate in memory after full filtering
+        var usersCount = usersList.Count;
+
+        var users 
+            = usersList
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToList();
 
         return TypedResults.Ok
         (
