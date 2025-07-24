@@ -76,7 +76,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
         // this metadata will be used in LogActionFilter to create logger
         // and get the endpoint name.
         usersGroup
-            .MapGet(RoutePatterns.All, GetAllUsers<TUser>)
+            .MapPost(RoutePatterns.All, GetAllUsers<TUser>)
             .WithDescription("Gets all users")
             .WithOpenApi(operation =>
             {
