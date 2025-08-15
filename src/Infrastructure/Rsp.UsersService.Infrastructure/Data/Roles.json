@@ -1,11 +1,5 @@
 [
   {
-    "Id": "c40073a2-8c05-41f9-a2e1-ce376b585b61",
-    "ConcurrencyStamp": "ad0bbca0-4d40-418d-8061-2904a29c2e4b",
-    "Name": "reviewer",
-    "NormalizedName": "REVIEWER"
-  },
-  {
     "Id": "d0c76beb-b25f-4d1d-8be8-2bdf5a3a4c92",
     "ConcurrencyStamp": "8c403e3f-540b-4ab1-ac5a-e0bc3fc65f6e",
     "Name": "applicant",
@@ -18,16 +12,10 @@
     "NormalizedName": "SYSTEM_ADMINISTRATOR"
   },
   {
-    "Id": "b008864d-5781-47ee-9aa9-e204155198a3",
-    "ConcurrencyStamp": "133fb613-7a85-44f9-b461-d506cfabc2a2",
-    "Name": "operations",
-    "NormalizedName": "OPERATIONS"
-  },
-  {
     "Id": "043aca8e-f88e-473e-974c-262f846285ea",
     "ConcurrencyStamp": "6c3d23eb-4b5f-4643-b23a-0d2bd58c034d",
-    "Name": "study_wide_reviewer",
-    "NormalizedName": "STUDY_WIDE_REVIEWER"
+    "Name": "study-wide_reviewer",
+    "NormalizedName": "STUDY-WIDE_REVIEWER"
   },
   {
     "Id": "952697e4-3d60-4172-b7bf-ee5ed6a7a1c3",
