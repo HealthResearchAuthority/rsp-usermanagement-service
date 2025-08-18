@@ -21,7 +21,7 @@ public static class GetAllUsersEndpoint
         int pageIndex = 1,
         int pageSize = 10,
         string sortField = nameof(UserDto.GivenName),
-        string sortDirection =  SortDirections.Descending
+        string sortDirection = SortDirections.Descending
     ) where TUser : IrasUser, new()
     {
         if (pageIndex < 1 || pageSize < 1)
@@ -55,12 +55,12 @@ public static class GetAllUsersEndpoint
 
             if (searchQuery.FromDate.HasValue)
             {
-                baseQuery = baseQuery.Where(x => x.LastLogin >= searchQuery.FromDate.Value);
+                baseQuery = baseQuery.Where(x => x.CurrentLogin >= searchQuery.FromDate.Value);
             }
 
             if (searchQuery.ToDate.HasValue)
             {
-                baseQuery = baseQuery.Where(x => x.LastLogin <= searchQuery.ToDate.Value);
+                baseQuery = baseQuery.Where(x => x.CurrentLogin <= searchQuery.ToDate.Value);
             }
         }
 
@@ -92,8 +92,7 @@ public static class GetAllUsersEndpoint
         // ✅ Now paginate in memory after full filtering
         var usersCount = usersList.Count;
 
-        var users 
-            = usersList
+        var users = usersList
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .ToList();
