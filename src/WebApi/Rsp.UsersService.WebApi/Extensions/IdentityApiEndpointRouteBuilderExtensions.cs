@@ -59,7 +59,8 @@ public static class IdentityApiEndpointRouteBuilderExtensions
 
         var routeGroup =
             endpoints
-                .MapGroup("");
+                .MapGroup("")
+                .RequireAuthorization();
 
         if (await featureManager.IsEnabledAsync(Features.InterceptedLogging))
         {
