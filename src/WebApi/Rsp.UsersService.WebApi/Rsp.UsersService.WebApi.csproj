@@ -23,6 +23,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Application\Rsp.UsersService.Application\Rsp.UsersService.Application.csproj" />
+		<ProjectReference Include="..\..\Infrastructure\Rsp.UsersService.Infrastructure\Rsp.UsersService.Infrastructure.csproj" />
 	</ItemGroup>
 
 </Project>
