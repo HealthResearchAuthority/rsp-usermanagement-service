@@ -5,7 +5,7 @@ namespace Rsp.UsersService.WebApi.Endpoints.Users;
 
 public static class UserHelper
 {
-    public static async Task<TUser?> FindUserAsync<TUser>(UserManager<TUser> userManager, string? id, string? email) where TUser : IrasUser
+    public static async Task<TUser?> FindUserAsync<TUser>(UserManager<TUser> userManager, string? id, string? email, string? identityProviderId = null) where TUser : IrasUser
     {
         if (!string.IsNullOrEmpty(email))
         {
@@ -16,6 +16,14 @@ public static class UserHelper
         {
             return await userManager.FindByIdAsync(id);
         }
+
+        if (!string.IsNullOrEmpty(identityProviderId))
+        {
+            return userManager.Users.FirstOrDefault(x =>
+                x.IdentityProviderId != null &&
+                x.IdentityProviderId == identityProviderId);
+        }
+
         return null;
     }
 

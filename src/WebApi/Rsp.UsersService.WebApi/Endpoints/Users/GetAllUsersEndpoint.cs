@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rsp.UsersService.Application.Constants;
 using Rsp.UsersService.Domain.Entities;
-using Rsp.UsersService.Infrastructure;
 using Rsp.UsersService.WebApi.DTOs;
 using Rsp.UsersService.WebApi.Requests;
 using Rsp.UsersService.WebApi.Responses;
@@ -26,11 +25,13 @@ public static class GetAllUsersEndpoint
     ) where TUser : IrasUser, new()
     {
         if (pageIndex < 1 || pageSize < 1)
+        {
             return TypedResults.BadRequest("PageIndex and PageSize should be greater than 0");
+        }
 
-        var db = sp.GetRequiredService<IrasIdentityDbContext>();
+        var userManager = sp.GetRequiredService<UserManager<TUser>>();
 
-        IQueryable<TUser> baseQuery = db.Set<TUser>();
+        var baseQuery = userManager.Users;
 
         if (searchQuery != null)
         {
@@ -61,147 +62,130 @@ public static class GetAllUsersEndpoint
             {
                 baseQuery = baseQuery.Where(x => x.CurrentLogin <= searchQuery.ToDate.Value);
             }
-
-            // ✅ Filter by selected role *names* using IdentityUserRole<string> shape (ANY match)
-            if (searchQuery.Role is { Count: > 0 })
-            {
-                var roleIds = searchQuery.Role
-                    .Where(id => !string.IsNullOrWhiteSpace(id))
-                    .Select(id => id.Trim())
-                    .ToList();
-
-                baseQuery = baseQuery.Where(u =>
-                    db.Set<UserRole>().Any(ur => ur.UserId == u.Id && roleIds.Contains(ur.RoleId)));
-            }
-
-            // ✅ Filter by selected review body user ids 
-            if (searchQuery?.UserIds is { Count: > 0 })
-            {
-                baseQuery = baseQuery.Where(u => searchQuery.UserIds.Contains(u.Id));
-            }
         }
 
-            // Apply sorting
-            baseQuery = ApplyOrdering(baseQuery, sortField, sortDirection);
+        // Apply sorting
+        baseQuery = ApplyOrdering(baseQuery, sortField, sortDirection);
 
-            // Materialize result (EF-safe filters only so far)
-            var usersList = await baseQuery.ToListAsync();
+        // Materialize result (EF-safe filters only so far)
+        var usersList = await baseQuery.ToListAsync();
 
-            // ✅ Now filter by Country in memory
-            if (searchQuery?.Country is { Count: > 0 })
-            {
-                var lowerCountries = searchQuery.Country
-                    .Where(c => !string.IsNullOrWhiteSpace(c))
-                    .Select(c => c.ToLowerInvariant())
-                    .ToList();
-
-                usersList = usersList
-                    .Where(x =>
-                        !string.IsNullOrWhiteSpace(x.Country) &&
-                        x.Country
-                            .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                            .Select(c => c.Trim().ToLowerInvariant())
-                            .Intersect(lowerCountries)
-                            .Any())
-                    .ToList();
-            }
-
-            // ✅ Now paginate in memory after full filtering
-            var usersCount = usersList.Count;
-
-            var users = usersList
-                .Skip((pageIndex - 1) * pageSize)
-                .Take(pageSize)
+        // ✅ Now filter by Country in memory
+        if (searchQuery?.Country is { Count: > 0 })
+        {
+            var lowerCountries = searchQuery.Country
+                .Where(c => !string.IsNullOrWhiteSpace(c))
+                .Select(c => c.ToLowerInvariant())
                 .ToList();
 
-            return TypedResults.Ok
-            (
-                new AllUsersResponse
-                {
-                    Users = users.Select
+            usersList = usersList
+                .Where(x =>
+                    !string.IsNullOrWhiteSpace(x.Country) &&
+                    x.Country
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(c => c.Trim().ToLowerInvariant())
+                        .Intersect(lowerCountries)
+                        .Any())
+                .ToList();
+        }
+
+        // ✅ Now paginate in memory after full filtering
+        var usersCount = usersList.Count;
+
+        var users = usersList
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        return TypedResults.Ok
+        (
+            new AllUsersResponse
+            {
+                Users = users.Select
                 (
                     user => new UserDto
-                        (
-                            user.Id,
-                            user.GivenName,
-                            user.FamilyName,
-                            user.Email!,
-                            user.Title,
-                            user.JobTitle,
-                            user.Organisation,
-                            user.Telephone,
-                            user.Country,
-                            user.Status,
-                            user.LastLogin,
-                            user.CurrentLogin,
-                            user.LastUpdated
-                        )
-                    ),
-                    TotalCount = usersCount
-                }
-            );
-        }
+                    (
+                        user.Id,
+                        user.GivenName,
+                        user.FamilyName,
+                        user.Email!,
+                        user.IdentityProviderId,
+                        user.Title,
+                        user.JobTitle,
+                        user.Organisation,
+                        user.Telephone,
+                        user.Country,
+                        user.Status,
+                        user.LastLogin,
+                        user.CurrentLogin,
+                        user.LastUpdated
+                    )
+                ),
+                TotalCount = usersCount
+            }
+        );
+    }
 
     /// <summary>
-        /// Dynamically applies ordering to a queryable based on field and direction.
-        /// </summary>
+    /// Dynamically applies ordering to a queryable based on field and direction.
+    /// </summary>
     private static IQueryable<TUser> ApplyOrdering<TUser>(IQueryable<TUser> query, string sortField, string sortDirection) where TUser : IrasUser
+    {
+        var field = sortField.ToLowerInvariant();
+
+        return (field, sortDirection) switch
         {
-            var field = sortField.ToLowerInvariant();
+            ("givenname", SortDirections.Ascending) => query
+                .OrderBy(x => x.GivenName)
+                .ThenByDescending(x => x.CurrentLogin)
+                .ThenBy(x => x.Status),
 
-            return (field, sortDirection) switch
-            {
-                ("givenname", SortDirections.Ascending) => query
-                    .OrderBy(x => x.GivenName)
-                    .ThenByDescending(x => x.CurrentLogin)
-                    .ThenBy(x => x.Status),
+            ("givenname", SortDirections.Descending) => query
+                .OrderByDescending(x => x.GivenName)
+                .ThenByDescending(x => x.CurrentLogin)
+                .ThenBy(x => x.Status),
 
-                ("givenname", SortDirections.Descending) => query
-                    .OrderByDescending(x => x.GivenName)
-                    .ThenByDescending(x => x.CurrentLogin)
-                    .ThenBy(x => x.Status),
+            ("familyname", SortDirections.Ascending) => query
+                .OrderBy(x => x.FamilyName)
+                .ThenByDescending(x => x.CurrentLogin)
+                .ThenBy(x => x.Status),
 
-                ("familyname", SortDirections.Ascending) => query
-                    .OrderBy(x => x.FamilyName)
-                    .ThenByDescending(x => x.CurrentLogin)
-                    .ThenBy(x => x.Status),
+            ("familyname", SortDirections.Descending) => query
+                .OrderByDescending(x => x.FamilyName)
+                .ThenByDescending(x => x.CurrentLogin)
+                .ThenBy(x => x.Status),
 
-                ("familyname", SortDirections.Descending) => query
-                    .OrderByDescending(x => x.FamilyName)
-                    .ThenByDescending(x => x.CurrentLogin)
-                    .ThenBy(x => x.Status),
+            ("email", SortDirections.Ascending) => query
+                .OrderBy(x => x.Email)
+                .ThenByDescending(x => x.CurrentLogin)
+                .ThenBy(x => x.Status),
 
-                ("email", SortDirections.Ascending) => query
-                    .OrderBy(x => x.Email)
-                    .ThenByDescending(x => x.CurrentLogin)
-                    .ThenBy(x => x.Status),
+            ("email", SortDirections.Descending) => query
+                .OrderByDescending(x => x.Email)
+                .ThenByDescending(x => x.CurrentLogin)
+                .ThenBy(x => x.Status),
 
-                ("email", SortDirections.Descending) => query
-                    .OrderByDescending(x => x.Email)
-                    .ThenByDescending(x => x.CurrentLogin)
-                    .ThenBy(x => x.Status),
+            ("status", SortDirections.Ascending) => query
+                .OrderBy(x => x.Status)
+                .ThenByDescending(x => x.CurrentLogin),
 
-                ("status", SortDirections.Ascending) => query
-                    .OrderBy(x => x.Status)
-                    .ThenByDescending(x => x.CurrentLogin),
+            ("status", SortDirections.Descending) => query
+                .OrderByDescending(x => x.Status)
+                .ThenByDescending(x => x.CurrentLogin)
+                .ThenBy(x => x.Status),
 
-                ("status", SortDirections.Descending) => query
-                    .OrderByDescending(x => x.Status)
-                    .ThenByDescending(x => x.CurrentLogin)
-                    .ThenBy(x => x.Status),
+            ("currentlogin", SortDirections.Ascending) => query
+                .OrderBy(x => x.CurrentLogin)
+                .ThenBy(x => x.Status),
 
-                ("currentlogin", SortDirections.Ascending) => query
-                    .OrderBy(x => x.CurrentLogin)
-                    .ThenBy(x => x.Status),
+            ("currentlogin", SortDirections.Descending) => query
+                .OrderByDescending(x => x.CurrentLogin)
+                .ThenBy(x => x.Status),
 
-                ("currentlogin", SortDirections.Descending) => query
-                    .OrderByDescending(x => x.CurrentLogin)
-                    .ThenBy(x => x.Status),
-
-                _ => query
-                    .OrderBy(x => x.GivenName)
-                    .ThenByDescending(x => x.CurrentLogin)
-                    .ThenBy(x => x.Status)
-            };
-        }
+            _ => query
+                .OrderBy(x => x.GivenName)
+                .ThenByDescending(x => x.CurrentLogin)
+                .ThenBy(x => x.Status)
+        };
     }
+}
