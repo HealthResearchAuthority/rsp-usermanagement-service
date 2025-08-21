@@ -54,6 +54,7 @@ public static class RegisterUserEndpoint
             Organisation = registration.Organisation,
             Status = registration.Status,
             LastUpdated = registration.LastUpdated,
+            IdentityProviderId = registration.IdentityProviderId
         };
 
         await userStore.SetUserNameAsync(user, email, CancellationToken.None);

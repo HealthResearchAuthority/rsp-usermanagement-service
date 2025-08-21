@@ -15,8 +15,8 @@ namespace Rsp.UsersService.UnitTests.UsersEndpointsTests;
 public class GetUserEndpointTests : TestServiceBase
 {
     [Theory]
-    [InlineData(null, null)]
-    public async Task GetUserByIdOrEmail_MissingParameters_ReturnsValidationProblem(string? id, string? email)
+    [InlineData(null, null, null)]
+    public async Task GetUserByIdOrEmail_MissingParameters_ReturnsValidationProblem(string? id, string? email, string? identityProviderId)
     {
         var userManagerMock = Mocker.GetMock<UserManager<IrasUser>>();
 
@@ -29,17 +29,19 @@ public class GetUserEndpointTests : TestServiceBase
         (
             Mocker.Get<IServiceProvider>(),
             id,
-            email
+            email,
+            identityProviderId
         );
 
         result.Result.ShouldBeOfType<ValidationProblem>();
     }
 
     [Theory]
-    [InlineData(null, "nonexistent@example.com")]
-    [InlineData("nonexistent-id", null)]
-    [InlineData("nonexistent-id", "nonexistent@example.com")]
-    public async Task GetUserByIdOrEmail_UserNotFound_ReturnsNotFound(string? id, string? email)
+    [InlineData(null, "nonexistent@example.com", null)]
+    [InlineData("nonexistent-id", null, null)]
+    [InlineData("nonexistent-id", "nonexistent@example.com", "non-existent-provider-id")]
+    [InlineData(null, null, "some-provider-id")]
+    public async Task GetUserByIdOrEmail_UserNotFound_ReturnsNotFound(string? id, string? email, string? identityProviderId)
     {
         var userManagerMock = Mocker.GetMock<UserManager<IrasUser>>();
 
@@ -51,6 +53,8 @@ public class GetUserEndpointTests : TestServiceBase
             .Setup(x => x.FindByIdAsync(id!))
             .ReturnsAsync((IrasUser)null!);
 
+        userManagerMock.Setup(x => x.Users).Returns(new List<IrasUser>().AsQueryable());
+
         Mocker
             .GetMock<IServiceProvider>()
             .Setup(x => x.GetService(typeof(UserManager<IrasUser>)))
@@ -60,7 +64,8 @@ public class GetUserEndpointTests : TestServiceBase
         (
             Mocker.Get<IServiceProvider>(),
             id,
-            email
+            email,
+            identityProviderId
         );
 
         var notFoundResult = result.Result.ShouldBeOfType<NotFound<string>>();
@@ -112,6 +117,7 @@ public class GetUserEndpointTests : TestServiceBase
         (
             Mocker.Get<IServiceProvider>(),
             user.Id,
+            null,
             null
         );
 
@@ -126,6 +132,7 @@ public class GetUserEndpointTests : TestServiceBase
                     user.GivenName,
                     user.FamilyName,
                     user.Email!,
+                    user.IdentityProviderId,
                     user.Title,
                     user.JobTitle,
                     user.Organisation,

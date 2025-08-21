@@ -37,6 +37,7 @@ public static class GetUsersInRoleEndpoint
                         user.GivenName,
                         user.FamilyName,
                         user.Email!,
+                        user.IdentityProviderId,
                         user.Title,
                         user.JobTitle,
                         user.Organisation,

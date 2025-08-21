@@ -6,23 +6,25 @@ namespace Rsp.UsersService.Domain.Entities;
 
 public class IrasUser : IdentityUser, IAuditable
 {
+    public string? IdentityProviderId { get; set; }
+
     [Auditable]
     public string? Title { get; set; } = null!;
 
     [Auditable]
-    public string FamilyName { get; set; } = null!;
+    public string? FamilyName { get; set; }
 
     [Auditable]
-    public string GivenName { get; set; } = null!;
+    public string? GivenName { get; set; }
 
     [Auditable]
-    public override string? Email { get; set; }
+    public override string Email { get; set; } = null!;
 
     [Auditable]
     public string? Telephone { get; set; } = null;
 
     [Auditable]
-    public string? Organisation { get; set; } = null;
+    public string? Organisation { get; set; } = null!;
 
     [Auditable]
     public string? Country { get; set; } = null;

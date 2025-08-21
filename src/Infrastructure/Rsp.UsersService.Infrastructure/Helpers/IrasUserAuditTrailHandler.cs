@@ -26,7 +26,7 @@ public class IrasUserAuditTrailHandler : IAuditTrailHandler
                     DateTimeStamp = DateTime.UtcNow,
                     Description = $"{irasUser.Email} was created",
                     UserId = irasUser.Id,
-                    SystemAdministratorId = systemAdmin.Id
+                    SystemAdministratorId = string.IsNullOrEmpty(systemAdmin?.Id) ? null : systemAdmin.Id
                 };
                 auditTrailRecords.Add(addAuditTrail);
                 break;
@@ -50,7 +50,7 @@ public class IrasUserAuditTrailHandler : IAuditTrailHandler
                     {
                         DateTimeStamp = DateTime.UtcNow,
                         UserId = irasUser.Id,
-                        SystemAdministratorId = systemAdmin.Id
+                        SystemAdministratorId = string.IsNullOrEmpty(systemAdmin?.Id) ? null : systemAdmin.Id
                     };
 
                     if (property.Metadata.Name == nameof(IrasUser.Status))

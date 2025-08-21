@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rsp.UsersService.Infrastructure;
 
@@ -11,9 +12,11 @@ using Rsp.UsersService.Infrastructure;
 namespace Rsp.UsersService.Infrastructure.Migrations
 {
     [DbContext(typeof(IrasIdentityDbContext))]
-    partial class IrasIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250819103649_AddIdentityProviderId")]
+    partial class AddIdentityProviderId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -276,6 +279,7 @@ namespace Rsp.UsersService.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SystemAdministratorId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserId")
@@ -347,7 +351,8 @@ namespace Rsp.UsersService.Infrastructure.Migrations
                     b.HasOne("Rsp.UsersService.Domain.Entities.IrasUser", "SystemAdministrator")
                         .WithMany()
                         .HasForeignKey("SystemAdministratorId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("Rsp.UsersService.Domain.Entities.IrasUser", "User")
                         .WithMany()

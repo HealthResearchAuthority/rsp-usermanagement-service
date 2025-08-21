@@ -19,6 +19,11 @@ public class UserRegisterRequest
     /// </summary>
     public string Email { get; set; } = null!;
 
+    /// <summary>
+    /// Identity Provider ID eg. OneLogin UK
+    /// </summary>
+    public string? IdentityProviderId { get; set; }
+
     public string? Country { get; set; } = null;
     public string? JobTitle { get; set; } = null;
     public string? Telephone { get; set; } = null;

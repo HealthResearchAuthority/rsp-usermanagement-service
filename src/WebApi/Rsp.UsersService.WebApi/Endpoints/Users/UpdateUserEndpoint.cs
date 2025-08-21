@@ -51,6 +51,7 @@ public static class UpdateUserEndpoint
         user.JobTitle = newUserDetails.JobTitle;
         user.LastUpdated = newUserDetails.LastUpdated;
         user.Status = newUserDetails.Status;
+        user.IdentityProviderId = newUserDetails.IdentityProviderId;
 
         if (newUserDetails.CurrentLogin != null)
         {

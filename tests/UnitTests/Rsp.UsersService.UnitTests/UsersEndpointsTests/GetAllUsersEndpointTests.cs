@@ -100,7 +100,7 @@ public class GetAllUsersEndpointTests : TestServiceBase
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .Select(u => new UserDto(
-                u.Id, u.GivenName, u.FamilyName, u.Email!, u.Title, u.JobTitle,
+                u.Id, u.GivenName, u.FamilyName, u.Email!, u.IdentityProviderId, u.Title, u.JobTitle,
                 u.Organisation, u.Telephone, u.Country, u.Status, u.LastLogin,
                 u.CurrentLogin, u.LastUpdated));
 
@@ -190,12 +190,11 @@ public class GetAllUsersEndpointTests : TestServiceBase
         };
 
         var expected = ordered
-            .Select(u => new UserDto(u.Id, u.GivenName, u.FamilyName, u.Email!, u.Title, u.JobTitle,
+            .Select(u => new UserDto(u.Id, u.GivenName, u.FamilyName, u.Email!, u.IdentityProviderId, u.Title, u.JobTitle,
                 u.Organisation, u.Telephone, u.Country, u.Status, u.LastLogin,
                 u.CurrentLogin, u.LastUpdated))
             .ToList();
 
         returnedUsers.ShouldBe(expected, ignoreOrder: false);
     }
-
 }
