@@ -24,7 +24,7 @@ public class IrasUser : IdentityUser, IAuditable
     public string? Telephone { get; set; } = null;
 
     [Auditable]
-    public string? Organisation { get; set; } = null!;
+    public string? Organisation { get; set; } = null;
 
     [Auditable]
     public string? Country { get; set; } = null;

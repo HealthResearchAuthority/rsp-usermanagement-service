@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rsp.UsersService.Application.Constants;
 using Rsp.UsersService.Domain.Entities;
+using Rsp.UsersService.Infrastructure;
 using Rsp.UsersService.WebApi.DTOs;
 using Rsp.UsersService.WebApi.Requests;
 using Rsp.UsersService.WebApi.Responses;
@@ -25,13 +25,11 @@ public static class GetAllUsersEndpoint
     ) where TUser : IrasUser, new()
     {
         if (pageIndex < 1 || pageSize < 1)
-        {
             return TypedResults.BadRequest("PageIndex and PageSize should be greater than 0");
-        }
 
-        var userManager = sp.GetRequiredService<UserManager<TUser>>();
+        var db = sp.GetRequiredService<IrasIdentityDbContext>();
 
-        var baseQuery = userManager.Users;
+        IQueryable<TUser> baseQuery = db.Set<TUser>();
 
         if (searchQuery != null)
         {
@@ -61,6 +59,24 @@ public static class GetAllUsersEndpoint
             if (searchQuery.ToDate.HasValue)
             {
                 baseQuery = baseQuery.Where(x => x.CurrentLogin <= searchQuery.ToDate.Value);
+            }
+
+            // ✅ Filter by selected role *names* using IdentityUserRole<string> shape (ANY match)
+            if (searchQuery.Role is { Count: > 0 })
+            {
+                var roleIds = searchQuery.Role
+                    .Where(id => !string.IsNullOrWhiteSpace(id))
+                    .Select(id => id.Trim())
+                    .ToList();
+
+                baseQuery = baseQuery.Where(u =>
+                    db.Set<UserRole>().Any(ur => ur.UserId == u.Id && roleIds.Contains(ur.RoleId)));
+            }
+
+            // ✅ Filter by selected review body user ids
+            if (searchQuery?.UserIds is { Count: > 0 })
+            {
+                baseQuery = baseQuery.Where(u => searchQuery.UserIds.Contains(u.Id));
             }
         }
 
@@ -102,8 +118,8 @@ public static class GetAllUsersEndpoint
             new AllUsersResponse
             {
                 Users = users.Select
-                (
-                    user => new UserDto
+            (
+                user => new UserDto
                     (
                         user.Id,
                         user.GivenName,
