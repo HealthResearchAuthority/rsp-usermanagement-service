@@ -17,16 +17,17 @@ public static class GetUserEndpoint
     (
         [FromServices] IServiceProvider sp,
         string? id,
-        string? email
+        string? email,
+        string? identityProviderId
     ) where TUser : IrasUser, new()
     {
-        if (id == null && email == null)
+        if (id == null && email == null && identityProviderId == null)
         {
-            return CreateValidationProblem("Missing_Parameters", "Please provide id or email to search for the user");
+            return CreateValidationProblem("Missing_Parameters", "Please provide id, email or identityProviderId to search for the user");
         }
 
         var userManager = sp.GetRequiredService<UserManager<TUser>>();
-        var user = await UserHelper.FindUserAsync(userManager, id, email);
+        var user = await UserHelper.FindUserAsync(userManager, id, email, identityProviderId);
 
         if (user == null)
         {
@@ -44,6 +45,7 @@ public static class GetUserEndpoint
             user.GivenName,
             user.FamilyName,
             user.Email!,
+            user.IdentityProviderId,
             user.Title,
             user.JobTitle,
             user.Organisation,

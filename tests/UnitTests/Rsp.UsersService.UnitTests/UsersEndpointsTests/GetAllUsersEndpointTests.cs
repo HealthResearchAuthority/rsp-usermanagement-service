@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Rsp.UsersService.Domain.Entities;
 using Rsp.UsersService.Infrastructure;
-using Rsp.UsersService.UnitTests.TestData;
-using Rsp.UsersService.WebApi.DTOs;
 using Rsp.UsersService.WebApi.Endpoints.Users;
 using Rsp.UsersService.WebApi.Requests;
 using Rsp.UsersService.WebApi.Responses;

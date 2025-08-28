@@ -75,6 +75,7 @@ public class GetUsersInRoleEndpointTests : TestServiceBase
                     user.GivenName,
                     user.FamilyName,
                     user.Email!,
+                    user.IdentityProviderId,
                     user.Title,
                     user.JobTitle,
                     user.Organisation,
