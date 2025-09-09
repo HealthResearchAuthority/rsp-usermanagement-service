@@ -67,8 +67,17 @@ public class IrasUserAuditTrailHandler : IAuditTrailHandler
 
                         if (property.Metadata.Name == nameof(IrasUser.Country))
                         {
-                            oldValue = property.OriginalValue?.ToString()?.Replace(",", ", ") ?? emptyValue;
-                            newValue = property.CurrentValue?.ToString()?.Replace(",", ", ") ?? emptyValue;
+                            oldValue = property.OriginalValue?.ToString()?.Replace(",", ", ");
+                            if (string.IsNullOrEmpty(oldValue as string))
+                            {
+                                oldValue = emptyValue;
+                            }
+
+                            newValue = property.CurrentValue?.ToString()?.Replace(",", ", ");
+                            if (string.IsNullOrEmpty(newValue as string))
+                            {
+                                newValue = emptyValue;
+                            }
                         }
 
                         updateAuditTrail.Description =
