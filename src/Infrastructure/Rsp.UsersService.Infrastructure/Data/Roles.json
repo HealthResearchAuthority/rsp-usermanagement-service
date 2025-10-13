@@ -23,10 +23,16 @@
     "Name": "team_manager",
     "NormalizedName": "TEAM_MANAGER"
   },
-  {
-    "Id": "97977acf-0bd5-48c2-9cf5-bc3fd215e5bb",
-    "ConcurrencyStamp": "514b807f-9b52-4e0e-8774-83c462e5012c",
-    "Name": "workflow_co-ordinator",
-    "NormalizedName": "WORKFLOW_CO-ORDINATOR"
-  }
+    {
+        "Id": "97977acf-0bd5-48c2-9cf5-bc3fd215e5bb",
+        "ConcurrencyStamp": "514b807f-9b52-4e0e-8774-83c462e5012c",
+        "Name": "workflow_co-ordinator",
+        "NormalizedName": "WORKFLOW_CO-ORDINATOR"
+    },
+    {
+        "Id": "c2c2b6c9-1f6c-4a0a-9d2a-6f2b7b4b1c8e",
+        "ConcurrencyStamp": "7f3d1a2b-5e64-4f08-9b7a-3c6d2c4b8e9f",
+        "Name": "sponsor",
+        "NormalizedName": "SPONSOR"
+    }
 ]
