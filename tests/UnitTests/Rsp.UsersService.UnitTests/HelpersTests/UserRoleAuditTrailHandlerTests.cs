@@ -128,7 +128,7 @@ public class UserRoleAuditTrailHandlerTests
         // Assert
         var auditTrail = result.Single();
 
-        auditTrail.Description.ShouldBe("test@example.com was unassigned system_administrator role");
+        auditTrail.Description.ShouldBe("test@example.com was unassigned system administrator role");
         auditTrail.UserId.ShouldBe("user1");
         auditTrail.SystemAdministratorId.ShouldBe("admin1");
     }

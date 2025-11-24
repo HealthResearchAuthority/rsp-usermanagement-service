@@ -37,7 +37,7 @@ public class UserRoleAuditTrailHandler : IAuditTrailHandler
                 var deleteAuditTrail = new UserAuditTrail()
                 {
                     DateTimeStamp = DateTime.UtcNow,
-                    Description = $"{user!.Email} was unassigned {role!.Name} role",
+                    Description = $"{user!.Email} was unassigned {role!.Name!.Replace('_', ' ')} role",
                     UserId = user!.Id,
                     SystemAdministratorId = systemAdmin.Id
                 };
