@@ -7,5 +7,5 @@ public interface IAuditTrailHandler
 {
     public bool CanHandle(object entity);
 
-    public Task<IEnumerable<UserAuditTrail>> GenerateAuditTrails(EntityEntry entity, IrasUser systemAdmin, IrasIdentityDbContext? context = null);
+    public Task<IEnumerable<UserAuditTrail>> GenerateAuditTrails(EntityEntry entity, IrasUser? systemAdmin, IrasIdentityDbContext? context = null);
 }

@@ -8,7 +8,7 @@ public class UserRoleAuditTrailHandler : IAuditTrailHandler
 {
     public bool CanHandle(object entity) => entity is UserRole;
 
-    public async Task<IEnumerable<UserAuditTrail>> GenerateAuditTrails(EntityEntry entity, IrasUser systemAdmin, IrasIdentityDbContext? context = null)
+    public async Task<IEnumerable<UserAuditTrail>> GenerateAuditTrails(EntityEntry entity, IrasUser? systemAdmin, IrasIdentityDbContext? context = null)
     {
         if (entity.Entity is not UserRole userRole || context == null)
         {
@@ -27,7 +27,7 @@ public class UserRoleAuditTrailHandler : IAuditTrailHandler
                     DateTimeStamp = DateTime.UtcNow,
                     Description = $"{user!.Email} was assigned {role!.Name!.Replace('_', ' ')} role",
                     UserId = user!.Id,
-                    SystemAdministratorId = systemAdmin.Id
+                    SystemAdministratorId = systemAdmin?.Id
                 };
 
                 auditTrailRecords.Add(addAuditTrail);
@@ -39,7 +39,7 @@ public class UserRoleAuditTrailHandler : IAuditTrailHandler
                     DateTimeStamp = DateTime.UtcNow,
                     Description = $"{user!.Email} was unassigned {role!.Name!.Replace('_', ' ')} role",
                     UserId = user!.Id,
-                    SystemAdministratorId = systemAdmin.Id
+                    SystemAdministratorId = systemAdmin?.Id
                 };
 
                 auditTrailRecords.Add(deleteAuditTrail);

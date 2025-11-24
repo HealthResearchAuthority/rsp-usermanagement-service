@@ -44,7 +44,7 @@ public class AuditTrailInterceptor(IAuditTrailDetailsService auditTrailDetailsSe
             {
                 if (auditTrailHandler.CanHandle(entry.Entity))
                 {
-                    auditTrailRecords.AddRange(await auditTrailHandler.GenerateAuditTrails(entry, systemAdmin!, dbContext));
+                    auditTrailRecords.AddRange(await auditTrailHandler.GenerateAuditTrails(entry, systemAdmin, dbContext));
                 }
             }
         }
