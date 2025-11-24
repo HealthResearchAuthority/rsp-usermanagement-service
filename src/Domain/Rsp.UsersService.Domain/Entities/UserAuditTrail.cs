@@ -6,7 +6,7 @@ public class UserAuditTrail
     public DateTime DateTimeStamp { get; set; }
     public string Description { get; set; } = null!;
     public string UserId { get; set; } = null!;
-    public string? SystemAdministratorId { get; set; } = null!;
+    public string? SystemAdministratorId { get; set; }
 
     // Navigation properties
     public IrasUser User { get; set; } = null!;

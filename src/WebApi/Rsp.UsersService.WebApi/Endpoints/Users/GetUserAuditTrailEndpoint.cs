@@ -33,7 +33,7 @@ public static class GetUserAuditTrailEndpoint
                Items = [.. userAuditTrail.Select
                (
                    at => new UserAuditTrailDto {
-                       SystemAdmin = at.SystemAdministrator.Email!,
+                       SystemAdmin = at.SystemAdministrator?.Email,
                        DateTimeStamp = at.DateTimeStamp,
                        Description = at.Description
                    }

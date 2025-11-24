@@ -9,7 +9,7 @@ public class IrasUserAuditTrailHandler : IAuditTrailHandler
 {
     public bool CanHandle(object entity) => entity is IrasUser;
 
-    public async Task<IEnumerable<UserAuditTrail>> GenerateAuditTrails(EntityEntry entity, IrasUser systemAdmin, IrasIdentityDbContext? context = null)
+    public async Task<IEnumerable<UserAuditTrail>> GenerateAuditTrails(EntityEntry entity, IrasUser? systemAdmin, IrasIdentityDbContext? context = null)
     {
         if (entity.Entity is not IrasUser irasUser)
         {
