@@ -1,28 +1,28 @@
 [
-  {
-    "Id": "d0c76beb-b25f-4d1d-8be8-2bdf5a3a4c92",
-    "ConcurrencyStamp": "8c403e3f-540b-4ab1-ac5a-e0bc3fc65f6e",
-    "Name": "applicant",
-    "NormalizedName": "APPLICANT"
-  },
-  {
-    "Id": "ddac109a-e4ad-4572-a175-7795f81ec0e7",
-    "ConcurrencyStamp": "019438de-9097-43c4-90e1-241e60224fa4",
-    "Name": "system_administrator",
-    "NormalizedName": "SYSTEM_ADMINISTRATOR"
-  },
-  {
-    "Id": "043aca8e-f88e-473e-974c-262f846285ea",
-    "ConcurrencyStamp": "6c3d23eb-4b5f-4643-b23a-0d2bd58c034d",
-    "Name": "study-wide_reviewer",
-    "NormalizedName": "STUDY-WIDE_REVIEWER"
-  },
-  {
-    "Id": "952697e4-3d60-4172-b7bf-ee5ed6a7a1c3",
-    "ConcurrencyStamp": "2845d0bc-25c4-4c81-a72c-e3e29d5b371f",
-    "Name": "team_manager",
-    "NormalizedName": "TEAM_MANAGER"
-  },
+    {
+        "Id": "d0c76beb-b25f-4d1d-8be8-2bdf5a3a4c92",
+        "ConcurrencyStamp": "8c403e3f-540b-4ab1-ac5a-e0bc3fc65f6e",
+        "Name": "applicant",
+        "NormalizedName": "APPLICANT"
+    },
+    {
+        "Id": "ddac109a-e4ad-4572-a175-7795f81ec0e7",
+        "ConcurrencyStamp": "019438de-9097-43c4-90e1-241e60224fa4",
+        "Name": "system_administrator",
+        "NormalizedName": "SYSTEM_ADMINISTRATOR"
+    },
+    {
+        "Id": "043aca8e-f88e-473e-974c-262f846285ea",
+        "ConcurrencyStamp": "6c3d23eb-4b5f-4643-b23a-0d2bd58c034d",
+        "Name": "study-wide_reviewer",
+        "NormalizedName": "STUDY-WIDE_REVIEWER"
+    },
+    {
+        "Id": "952697e4-3d60-4172-b7bf-ee5ed6a7a1c3",
+        "ConcurrencyStamp": "2845d0bc-25c4-4c81-a72c-e3e29d5b371f",
+        "Name": "team_manager",
+        "NormalizedName": "TEAM_MANAGER"
+    },
     {
         "Id": "97977acf-0bd5-48c2-9cf5-bc3fd215e5bb",
         "ConcurrencyStamp": "514b807f-9b52-4e0e-8774-83c462e5012c",
@@ -34,5 +34,11 @@
         "ConcurrencyStamp": "7f3d1a2b-5e64-4f08-9b7a-3c6d2c4b8e9f",
         "Name": "sponsor",
         "NormalizedName": "SPONSOR"
+    },
+    {
+        "Id": "7b6f1b5e-3a42-4a3f-9c6a-6f8a6f8c4d21",
+        "ConcurrencyStamp": "c4e6b8a1-2a0f-4f6e-9b9a-3c6c6e4d9b87",
+        "Name": "organisation_administrator",
+        "NormalizedName": "ORGANISATION_ADMINISTRATOR"
     }
 ]
