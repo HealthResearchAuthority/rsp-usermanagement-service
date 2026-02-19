@@ -21,4 +21,6 @@ public class AppSettings
     /// Gets or sets OneLogin settings
     /// </summary>
     public OneLoginConfiguration OneLogin { get; set; } = null!;
+
+    public MicrosoftEntra MicrosoftEntra { get; set; } = null!;
 }
