@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -81,32 +82,68 @@ public static class AuthConfiguration
 
         // Enable built-in authentication of Jwt bearer token
         services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddAuthentication()
             // using the scheme JwtBearerDefaults.AuthenticationScheme (Bearer)
-            .AddJwtBearer(async authOptions => await JwtBearerConfiguration.Configure(authOptions, appSettings, events, featureManager));
+            .AddJwtBearer("DefaultBearer", async authOptions => await JwtBearerConfiguration.Configure(authOptions, appSettings, events, featureManager))
+            .AddJwtBearer("FunctionAppBearer", options =>
+            {
+                options.Authority = appSettings.MicrosoftEntra.Authority;
+                options.Audience = appSettings.MicrosoftEntra.Audience;
+                options.Events = events;
+            })
+            .AddPolicyScheme("dynamicBearer", null, options =>
+            {
+                options.ForwardDefaultSelector = context =>
+                {
+                    var tokenHelper = context.Request.HttpContext.RequestServices.GetRequiredService<ITokenHelper>();
+                    var authToken = context.Request.Headers[HeaderNames.Authorization];
+
+                    // if we don't have token, there is nothing to forward to
+                    if (string.IsNullOrWhiteSpace(authToken))
+                    {
+                        return JwtBearerDefaults.AuthenticationScheme;
+                    }
+
+                    // replace the "Bearer " if present in the token
+                    var token = tokenHelper.DeBearerizeAuthToken(authToken);
+                    var jwtHandler = new JwtSecurityTokenHandler();
+
+                    // if we can't read the token, return the empty scheme
+                    if (!jwtHandler.CanReadToken(token))
+                    {
+                        return JwtBearerDefaults.AuthenticationScheme;
+                    }
+
+                    // get the token to verify the issuer
+                    var jwtSecurityToken = jwtHandler.ReadJwtToken(token);
+
+                    // based on the issuer, we will forward the request to the appropriate scheme
+                    // if the token issuer is the one for OneLogin, use the default JwtBearer scheme
+                    // if the issuer is the one for Microsoft Entra ID, use the FunctionAppBearer scheme
+                    return jwtSecurityToken.Issuer == appSettings.MicrosoftEntra.Authority ? "FunctionAppBearer" : "DefaultBearer";
+                };
+            });
     }
 
     private static void ConfigureAuthorization(IServiceCollection services)
     {
-        // amend the default policy so that
-        // it checks for email and role claim
-        // in addition to just an authenticated user
-        var defaultPolicy = new AuthorizationPolicyBuilder()
-            .RequireAuthenticatedUser()
-            .RequireClaim(ClaimTypes.Email)
-            .RequireClaim(ClaimTypes.Role)
-            .RequireRole("system_administrator", "iras_portal_user")
-            .Build();
+        services.AddAuthorization(options =>
+        {
+            // Policy that only uses defaultBearer scheme
+            options.AddPolicy("UseDefaultBearerOnly", policy =>
+            {
+                policy
+                    .AddAuthenticationSchemes("defaultBearer")
+                    .RequireAuthenticatedUser()
+                    .RequireClaim(ClaimTypes.Email)
+                    .RequireClaim(ClaimTypes.Role);
+            });
 
-        // set the default policy for [Authorize] attribute
-        // without a policy name
-        services
-            .AddAuthorizationBuilder()
-            .SetDefaultPolicy(defaultPolicy);
-
-        // add an authorization handler to handle the requirements e.g. for a user in a
-        // particular role. The requirement can be linked directly to the the custom [Authorize]
-        // attribute or to the policy, which you can specify in [Authorize(Name = policyName)].
-        // services.AddSingleton<IAuthorizationHandler, RequirementHandler>()
+            // Optional: default policy can use dynamicBearer if you want
+            options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                .AddAuthenticationSchemes("dynamicBearer")
+                .RequireAuthenticatedUser()
+                .Build();
+        });
     }
 }
