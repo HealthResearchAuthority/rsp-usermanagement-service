@@ -28,6 +28,13 @@ public class TokenHelper : ITokenHelper
                 .TrimStart(' ');
         }
 
+        if (token!.StartsWith("FunctionAppBearer", StringComparison.OrdinalIgnoreCase))
+        {
+            token = token
+                .Replace("FunctionAppBearer", string.Empty)
+                .TrimStart(' ');
+        }
+
         return token;
     }
 
