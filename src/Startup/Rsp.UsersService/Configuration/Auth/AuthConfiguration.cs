@@ -39,40 +39,47 @@ public static class AuthConfiguration
             OnMessageReceived = context =>
             {
                 var tokenHelper = context.Request.HttpContext.RequestServices.GetRequiredService<ITokenHelper>();
-                var authorization = context.Request.Headers[HeaderNames.Authorization];
-
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
 
-                // If no authorization header found, nothing to process further
+                var authorization = context.Request.Headers[HeaderNames.Authorization];
+
+                logger.LogAsInformation("Authorization header received: {AuthorizationHeader}", authorization.ToString());
+
                 if (string.IsNullOrWhiteSpace(authorization))
                 {
                     logger.LogAsWarning("Authorization header is empty");
-
                     context.NoResult();
                     return Task.CompletedTask;
                 }
 
-                // if authorization starts with "Bearer " replace that with empty string
-                context.Token = tokenHelper.DeBearerizeAuthToken(authorization);
+                var token = tokenHelper.DeBearerizeAuthToken(authorization);
+
+                logger.LogAsInformation("Token extracted (first 20 chars): {TokenSnippet}",
+                    token?.Length > 20 ? token.Substring(0, 20) : token);
+
+                context.Token = token;
 
                 return Task.CompletedTask;
             },
+
             OnAuthenticationFailed = context =>
             {
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
 
-                logger.LogAsWarning("Authentication Failed");
-                logger.LogAsError("ERR_API_AUTH_FAILED", "API Authetication failed", context.Exception);
-
-                context.Fail(context.Exception);
+                logger.LogAsWarning("Authentication failed");
+                logger.LogAsError("ERR_API_AUTH_FAILED", "API Authentication failed", context.Exception);
 
                 return Task.CompletedTask;
             },
+
             OnTokenValidated = context =>
             {
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
 
-                logger.LogAsInformation("AuthToken Validated");
+                var claims = context.Principal?.Claims
+                    .Select(c => $"{c.Type}: {c.Value}");
+
+                logger.LogAsInformation("Token validated successfully. Claims: {@Claims}", claims);
 
                 return Task.CompletedTask;
             }
@@ -80,47 +87,60 @@ public static class AuthConfiguration
 
         var featureManager = new FeatureManager(new ConfigurationFeatureDefinitionProvider(config));
 
-        // Enable built-in authentication of Jwt bearer token
         services
             .AddAuthentication()
-            // using the scheme JwtBearerDefaults.AuthenticationScheme (Bearer)
-            .AddJwtBearer("DefaultBearer", async authOptions => await JwtBearerConfiguration.Configure(authOptions, appSettings, events, featureManager))
+            .AddJwtBearer("DefaultBearer", async authOptions =>
+                await JwtBearerConfiguration.Configure(authOptions, appSettings, events, featureManager))
+
             .AddJwtBearer("FunctionAppBearer", options =>
             {
                 options.Authority = appSettings.MicrosoftEntra.Authority;
                 options.Audience = appSettings.MicrosoftEntra.Audience;
                 options.Events = events;
             })
+
             .AddPolicyScheme("dynamicBearer", null, options =>
             {
                 options.ForwardDefaultSelector = context =>
                 {
+                    var logger = context.Request.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
                     var tokenHelper = context.Request.HttpContext.RequestServices.GetRequiredService<ITokenHelper>();
-                    var authToken = context.Request.Headers[HeaderNames.Authorization];
 
-                    // if we don't have token, there is nothing to forward to
-                    if (string.IsNullOrWhiteSpace(authToken))
+                    var authHeader = context.Request.Headers[HeaderNames.Authorization];
+
+                    logger.LogAsInformation("Forward selector invoked. Authorization header: {Header}", authHeader.ToString());
+
+                    if (string.IsNullOrWhiteSpace(authHeader))
                     {
+                        logger.LogAsWarning("No auth header found. Falling back to default scheme");
                         return JwtBearerDefaults.AuthenticationScheme;
                     }
 
-                    // replace the "Bearer " if present in the token
-                    var token = tokenHelper.DeBearerizeAuthToken(authToken);
+                    var token = tokenHelper.DeBearerizeAuthToken(authHeader);
+
+                    logger.LogAsInformation("Token for scheme selection (first 20 chars): {TokenSnippet}",
+                        token?.Length > 20 ? token.Substring(0, 20) : token);
+
                     var jwtHandler = new JwtSecurityTokenHandler();
 
-                    // if we can't read the token, return the empty scheme
                     if (!jwtHandler.CanReadToken(token))
                     {
+                        logger.LogAsWarning("Token cannot be read. Falling back to default scheme");
                         return JwtBearerDefaults.AuthenticationScheme;
                     }
 
-                    // get the token to verify the issuer
-                    var jwtSecurityToken = jwtHandler.ReadJwtToken(token);
+                    var jwtToken = jwtHandler.ReadJwtToken(token);
 
-                    // based on the issuer, we will forward the request to the appropriate scheme
-                    // if the token issuer is the one for OneLogin, use the default JwtBearer scheme
-                    // if the issuer is the one for Microsoft Entra ID, use the FunctionAppBearer scheme
-                    return jwtSecurityToken.Issuer == appSettings.MicrosoftEntra.Authority ? "FunctionAppBearer" : "DefaultBearer";
+                    logger.LogAsInformation("Token issuer: {Issuer}", jwtToken.Issuer);
+                    logger.LogAsInformation("Expected Entra Authority: {Authority}", appSettings.MicrosoftEntra.Authority);
+
+                    var selectedScheme = jwtToken.Issuer == appSettings.MicrosoftEntra.Authority
+                        ? "FunctionAppBearer"
+                        : "DefaultBearer";
+
+                    logger.LogAsInformation("Authentication scheme selected: {Scheme}", selectedScheme);
+
+                    return selectedScheme;
                 };
             });
     }
