@@ -41,21 +41,20 @@ public static class AuthConfiguration
                 var tokenHelper = context.Request.HttpContext.RequestServices.GetRequiredService<ITokenHelper>();
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
 
-                var authorization = context.Request.Headers[HeaderNames.Authorization];
+                var authorization = context.Request.Headers[HeaderNames.Authorization].ToString();
 
-                logger.LogAsInformation("Authorization header received: {AuthorizationHeader}", authorization.ToString());
+                logger.LogInformation("Authorization header: " + authorization);
 
                 if (string.IsNullOrWhiteSpace(authorization))
                 {
-                    logger.LogAsWarning("Authorization header is empty");
+                    logger.LogWarning("Authorization header is empty");
                     context.NoResult();
                     return Task.CompletedTask;
                 }
 
                 var token = tokenHelper.DeBearerizeAuthToken(authorization);
 
-                logger.LogAsInformation("Token extracted (first 20 chars): {TokenSnippet}",
-                    token?.Length > 20 ? token.Substring(0, 20) : token);
+                logger.LogInformation("Extracted token: " + (token?.Length > 20 ? token.Substring(0, 20) : token));
 
                 context.Token = token;
 
@@ -66,8 +65,8 @@ public static class AuthConfiguration
             {
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
 
-                logger.LogAsWarning("Authentication failed");
-                logger.LogAsError("ERR_API_AUTH_FAILED", "API Authentication failed", context.Exception);
+                logger.LogWarning("Authentication failed");
+                logger.LogError("Authentication exception: " + context.Exception);
 
                 return Task.CompletedTask;
             },
@@ -77,9 +76,9 @@ public static class AuthConfiguration
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
 
                 var claims = context.Principal?.Claims
-                    .Select(c => $"{c.Type}: {c.Value}");
+                    .Select(c => c.Type + ": " + c.Value);
 
-                logger.LogAsInformation("Token validated successfully. Claims: {@Claims}", claims);
+                logger.LogInformation("Token validated. Claims: " + string.Join(", ", claims ?? []));
 
                 return Task.CompletedTask;
             }
@@ -106,41 +105,40 @@ public static class AuthConfiguration
                     var logger = context.Request.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
                     var tokenHelper = context.Request.HttpContext.RequestServices.GetRequiredService<ITokenHelper>();
 
-                    var authHeader = context.Request.Headers[HeaderNames.Authorization];
+                    var authHeader = context.Request.Headers[HeaderNames.Authorization].ToString();
 
-                    logger.LogAsInformation("Forward selector invoked. Authorization header: {Header}", authHeader.ToString());
+                    logger.LogInformation("Forward selector - header: " + authHeader);
 
                     if (string.IsNullOrWhiteSpace(authHeader))
                     {
-                        logger.LogAsWarning("No auth header found. Falling back to default scheme");
+                        logger.LogWarning("No auth header, using default scheme");
                         return JwtBearerDefaults.AuthenticationScheme;
                     }
 
                     var token = tokenHelper.DeBearerizeAuthToken(authHeader);
 
-                    logger.LogAsInformation("Token for scheme selection (first 20 chars): {TokenSnippet}",
-                        token?.Length > 20 ? token.Substring(0, 20) : token);
+                    logger.LogInformation("Token for scheme selection: " + (token?.Length > 20 ? token.Substring(0, 20) : token));
 
                     var jwtHandler = new JwtSecurityTokenHandler();
 
                     if (!jwtHandler.CanReadToken(token))
                     {
-                        logger.LogAsWarning("Token cannot be read. Falling back to default scheme");
+                        logger.LogWarning("Cannot read token, using default scheme");
                         return JwtBearerDefaults.AuthenticationScheme;
                     }
 
                     var jwtToken = jwtHandler.ReadJwtToken(token);
 
-                    logger.LogAsInformation("Token issuer: {Issuer}", jwtToken.Issuer);
-                    logger.LogAsInformation("Expected Entra Authority: {Authority}", appSettings.MicrosoftEntra.Authority);
+                    logger.LogInformation("Token issuer: " + jwtToken.Issuer);
+                    logger.LogInformation("Expected authority: " + appSettings.MicrosoftEntra.Authority);
 
-                    var selectedScheme = jwtToken.Issuer == appSettings.MicrosoftEntra.Authority
+                    var scheme = jwtToken.Issuer == appSettings.MicrosoftEntra.Authority
                         ? "FunctionAppBearer"
                         : "DefaultBearer";
 
-                    logger.LogAsInformation("Authentication scheme selected: {Scheme}", selectedScheme);
+                    logger.LogInformation("Selected scheme: " + scheme);
 
-                    return selectedScheme;
+                    return scheme;
                 };
             });
     }
