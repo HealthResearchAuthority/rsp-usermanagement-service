@@ -40,5 +40,29 @@
         "ConcurrencyStamp": "c4e6b8a1-2a0f-4f6e-9b9a-3c6c6e4d9b87",
         "Name": "organisation_administrator",
         "NormalizedName": "ORGANISATION_ADMINISTRATOR"
+    },
+    {
+        "Id": "e1a3f6d2-7c4b-4a8e-9f1d-2b3c4d5e6f70",
+        "ConcurrencyStamp": "a9b8c7d6-e5f4-4a3b-9c8d-7e6f5a4b3c21",
+        "Name": "administrator",
+        "NormalizedName": "ADMINISTRATOR"
+    },
+    {
+        "Id": "f2b4c6d8-1e3a-4b7c-9d2f-5a6b7c8d9e01",
+        "ConcurrencyStamp": "b1c2d3e4-f5a6-4b7c-8d9e-0a1b2c3d4e5f",
+        "Name": "member_management",
+        "NormalizedName": "MEMBER_MANAGEMENT"
+    },
+    {
+        "Id": "a3d5f7b9-2c4e-4d8f-9a1b-6c7d8e9f0a12",
+        "ConcurrencyStamp": "c2d3e4f5-a6b7-4c8d-9e0f-1a2b3c4d5e6f",
+        "Name": "research_ethics_committee_manager",
+        "NormalizedName": "RESEARCH_ETHICS_COMMITTEE_MANAGER"
+    },
+    {
+        "Id": "b4e6a8c0-3d5f-4e9a-8b2c-7d8e9f0a1b23",
+        "ConcurrencyStamp": "d3e4f5a6-b7c8-4d9e-0f1a-2b3c4d5e6f7a",
+        "Name": "reviewer",
+        "NormalizedName": "REVIEWER"
     }
 ]
