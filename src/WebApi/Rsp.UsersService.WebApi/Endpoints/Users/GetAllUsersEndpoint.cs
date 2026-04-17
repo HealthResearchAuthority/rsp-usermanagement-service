@@ -152,32 +152,32 @@ public static class GetAllUsersEndpoint
         return (field, sortDirection) switch
         {
             ("givenname", SortDirections.Ascending) => query
-                .OrderBy(x => x.GivenName)
+                .OrderBy(x => x.GivenName.Trim())
                 .ThenByDescending(x => x.CurrentLogin)
                 .ThenBy(x => x.Status),
 
             ("givenname", SortDirections.Descending) => query
-                .OrderByDescending(x => x.GivenName)
+                .OrderByDescending(x => x.GivenName.Trim())
                 .ThenByDescending(x => x.CurrentLogin)
                 .ThenBy(x => x.Status),
 
             ("familyname", SortDirections.Ascending) => query
-                .OrderBy(x => x.FamilyName)
+                .OrderBy(x => x.FamilyName.Trim())
                 .ThenByDescending(x => x.CurrentLogin)
                 .ThenBy(x => x.Status),
 
             ("familyname", SortDirections.Descending) => query
-                .OrderByDescending(x => x.FamilyName)
+                .OrderByDescending(x => x.FamilyName.Trim())
                 .ThenByDescending(x => x.CurrentLogin)
                 .ThenBy(x => x.Status),
 
             ("email", SortDirections.Ascending) => query
-                .OrderBy(x => x.Email)
+                .OrderBy(x => x.Email.Trim())
                 .ThenByDescending(x => x.CurrentLogin)
                 .ThenBy(x => x.Status),
 
             ("email", SortDirections.Descending) => query
-                .OrderByDescending(x => x.Email)
+                .OrderByDescending(x => x.Email.Trim())
                 .ThenByDescending(x => x.CurrentLogin)
                 .ThenBy(x => x.Status),
 
@@ -199,7 +199,7 @@ public static class GetAllUsersEndpoint
                 .ThenBy(x => x.Status),
 
             _ => query
-                .OrderBy(x => x.GivenName)
+                .OrderBy(x => x.GivenName.Trim())
                 .ThenByDescending(x => x.CurrentLogin)
                 .ThenBy(x => x.Status)
         };
